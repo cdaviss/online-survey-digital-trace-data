@@ -148,7 +148,8 @@ ul {
 	color: #f48024;
 }
 
-#vertical {
+#vertical,
+.vertical {
 	display: flex;
 	flex-direction: column;
 	justify-content: space-evenly;

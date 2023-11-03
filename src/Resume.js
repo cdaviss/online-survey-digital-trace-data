@@ -915,40 +915,11 @@ export default class Resume extends React.Component {
 								</div>
 
 								<div className="votingblock_notes">
-									<div id="vertical">
-										<img
-											name="notes_up"
-											src={
-												this.state.notes_up
-													? imageToURL("upvote_selected")
-													: imageToURL("upvote")
-											}
-											onClick={this.voteClick}
-											alt="upvote"
-										/>
-
-										<img
-											name="notes_q"
-											src={
-												this.state.notes_q
-													? imageToURL("circle_selected")
-													: imageToURL("circle")
-											}
-											onClick={this.voteClick}
-											alt="neutral"
-										/>
-
-										<img
-											name="notes_down"
-											src={
-												this.state.notes_down
-													? imageToURL("downvote_selected")
-													: imageToURL("downvote")
-											}
-											onClick={this.voteClick}
-											alt="downvote"
-										/>
-									</div>
+									<VotingButtons
+										state={this.state}
+										onClick={this.voteClick}
+										sectionName="education"
+									/>
 									<div className="notes">
 										Notes from Initial Phone Screen:
 										<span id="subtext_bullet">
@@ -1133,3 +1104,45 @@ export default class Resume extends React.Component {
 function imageToURL(imageName) {
 	return `${process.env.PUBLIC_URL}/images/${imageName}.png`;
 }
+
+/**
+ * Component: upvote, circle, and downvote, in traffic light colors.
+ */
+const VotingButtons = ({ state, clickFunction, sectionName }) => {
+	return (
+		<div className="vertical">
+			<img
+				name={`${sectionName}_up`}
+				src={
+					state[`${sectionName}_up`]
+						? imageToURL("upvote_selected")
+						: imageToURL("upvote")
+				}
+				onClick={clickFunction}
+				alt="upvote"
+			/>
+
+			<img
+				name={`${sectionName}_q`}
+				src={
+					state[`${sectionName}_q`]
+						? imageToURL("circle_selected")
+						: imageToURL("circle")
+				}
+				onClick={clickFunction}
+				alt="question mark"
+			/>
+
+			<img
+				name={`${sectionName}_down`}
+				src={
+					state[`${sectionName}_down`]
+						? imageToURL("downvote_selected")
+						: imageToURL("downvote")
+				}
+				onClick={clickFunction}
+				alt="downvote"
+			/>
+		</div>
+	);
+};

@@ -57,7 +57,7 @@ class App extends React.Component {
 
 					<Route path="/admin" render={(props) => <ReadData />} />
 
-					<Route path="/" render={(props) => <LandingPage />} />
+					<Route path="/info" render={(props) => <LandingPage />} />
 				</HashRouter>
 			</div>
 		);
