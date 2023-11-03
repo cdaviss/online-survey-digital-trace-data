@@ -4,16 +4,16 @@
 # Delete irrelevant entries as appropriate
 ####################################################################
 
+# This holds the Firebase API keys, so it should be kept secret
+config.js
 
 ########################### Common Credential Filenames ###########################
 token.json
 credentials.json
 *secret*.json
 
-
 ########################### VS Code ###########################
 *.code-workspace
-
 
 ########################### Node ###########################
 # Optional npm cache directory
@@ -26,7 +26,6 @@ node_modules/
 compiled/
 # Expo (React Native)
 .expo/
-
 
 ############################## Create React App #############################
 # dependencies
@@ -52,9 +51,7 @@ yarn-error.log*
 ########################## Python ##########################
 # Byte-compiled / optimized / DLL files
 __pycache__/
-*.py[cod]
 *$py.class
-
 
 ########################## SASS ##########################
 .sass-cache/
@@ -62,14 +59,12 @@ __pycache__/
 *.sass.map
 *.scss.map
 
-
 ########################## Jupyter Notebooks ##########################
 .ipynb_checkpoints
 */.ipynb_checkpoints/*
 # IPython
 profile_default/
 ipython_config.py
-
 
 ########################## Android ##########################
 # Local configuration file (sdk path, etc)
@@ -82,16 +77,13 @@ captures/
 # Google Services (e.g. APIs or Firebase)
 google-services.json
 
-
 ########################## Java ##########################
 # Compiled class file
 *.class
 
-
 ########################## C++ ##########################
 # Compiled file
 *.o
-
 
 ##################################################################################################################
 # The below are pretty universal, so you probably want to keep them for all projects.
@@ -117,7 +109,6 @@ google-services.json
 .Trash-*
 # .nfs files are created when an open file is removed but is still being accessed
 .nfs*
-
 
 ########################## macOS ##########################
 # General
