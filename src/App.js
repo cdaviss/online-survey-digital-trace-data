@@ -2,6 +2,7 @@ import React from "react";
 import Resume from "./Resume";
 import "./App.css";
 import { HashRouter, Route } from "react-router-dom";
+import ReadData from "./ReadData";
 import "bootstrap/dist/css/bootstrap.min.css";
 
 // import Admin from "./Admin";
@@ -53,7 +54,7 @@ class App extends React.Component {
 						)}
 					/>
 
-					{/* <Route path="/admin" render={(props) => <ReadData />} /> */}
+					<Route path="/admin" render={(props) => <ReadData />} />
 				</HashRouter>
 			</div>
 		);
