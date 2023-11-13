@@ -1,23 +1,23 @@
 {
   "files": {
-    "main.css": "/TheFirstQuestion/online-survey-digital-trace-data/static/css/main.b06e1b7a.chunk.css",
-    "main.js": "/TheFirstQuestion/online-survey-digital-trace-data/static/js/main.5ff54439.chunk.js",
-    "main.js.map": "/TheFirstQuestion/online-survey-digital-trace-data/static/js/main.5ff54439.chunk.js.map",
-    "runtime-main.js": "/TheFirstQuestion/online-survey-digital-trace-data/static/js/runtime-main.62e46f72.js",
-    "runtime-main.js.map": "/TheFirstQuestion/online-survey-digital-trace-data/static/js/runtime-main.62e46f72.js.map",
-    "static/css/2.4c34b247.chunk.css": "/TheFirstQuestion/online-survey-digital-trace-data/static/css/2.4c34b247.chunk.css",
-    "static/js/2.177ca542.chunk.js": "/TheFirstQuestion/online-survey-digital-trace-data/static/js/2.177ca542.chunk.js",
-    "static/js/2.177ca542.chunk.js.map": "/TheFirstQuestion/online-survey-digital-trace-data/static/js/2.177ca542.chunk.js.map",
-    "index.html": "/TheFirstQuestion/online-survey-digital-trace-data/index.html",
-    "static/css/2.4c34b247.chunk.css.map": "/TheFirstQuestion/online-survey-digital-trace-data/static/css/2.4c34b247.chunk.css.map",
-    "static/css/main.b06e1b7a.chunk.css.map": "/TheFirstQuestion/online-survey-digital-trace-data/static/css/main.b06e1b7a.chunk.css.map",
-    "static/js/2.177ca542.chunk.js.LICENSE.txt": "/TheFirstQuestion/online-survey-digital-trace-data/static/js/2.177ca542.chunk.js.LICENSE.txt"
+    "main.css": "/online-survey-digital-trace-data/static/css/main.b06e1b7a.chunk.css",
+    "main.js": "/online-survey-digital-trace-data/static/js/main.7f7cdb1a.chunk.js",
+    "main.js.map": "/online-survey-digital-trace-data/static/js/main.7f7cdb1a.chunk.js.map",
+    "runtime-main.js": "/online-survey-digital-trace-data/static/js/runtime-main.0af84758.js",
+    "runtime-main.js.map": "/online-survey-digital-trace-data/static/js/runtime-main.0af84758.js.map",
+    "static/css/2.4c34b247.chunk.css": "/online-survey-digital-trace-data/static/css/2.4c34b247.chunk.css",
+    "static/js/2.333dbe3b.chunk.js": "/online-survey-digital-trace-data/static/js/2.333dbe3b.chunk.js",
+    "static/js/2.333dbe3b.chunk.js.map": "/online-survey-digital-trace-data/static/js/2.333dbe3b.chunk.js.map",
+    "index.html": "/online-survey-digital-trace-data/index.html",
+    "static/css/2.4c34b247.chunk.css.map": "/online-survey-digital-trace-data/static/css/2.4c34b247.chunk.css.map",
+    "static/css/main.b06e1b7a.chunk.css.map": "/online-survey-digital-trace-data/static/css/main.b06e1b7a.chunk.css.map",
+    "static/js/2.333dbe3b.chunk.js.LICENSE.txt": "/online-survey-digital-trace-data/static/js/2.333dbe3b.chunk.js.LICENSE.txt"
   },
   "entrypoints": [
-    "static/js/runtime-main.62e46f72.js",
+    "static/js/runtime-main.0af84758.js",
     "static/css/2.4c34b247.chunk.css",
-    "static/js/2.177ca542.chunk.js",
+    "static/js/2.333dbe3b.chunk.js",
     "static/css/main.b06e1b7a.chunk.css",
-    "static/js/main.5ff54439.chunk.js"
+    "static/js/main.7f7cdb1a.chunk.js"
   ]
 }
