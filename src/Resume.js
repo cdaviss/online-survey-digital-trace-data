@@ -36,11 +36,11 @@ export default class Resume extends React.Component {
 		});
 	}
 
-	componentWillUnmount() {
-		if (this.timer) {
-			clearInterval(this.timer);
-		}
-	}
+	// componentWillUnmount() {
+	// 	if (this.timer) {
+	// 		clearInterval(this.timer);
+	// 	}
+	// }
 
 	/** Decide what values they will see in the study */
 	selectValues() {
