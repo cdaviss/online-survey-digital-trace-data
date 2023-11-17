@@ -1,7 +1,6 @@
 import React from "react";
 import "./App.css";
 import Divider from "@material-ui/core/Divider";
-import ModalReact from "react-modal";
 import firebase from "./firebase";
 import Accordion from "react-bootstrap/Accordion";
 import Button from "react-bootstrap/Button";
@@ -11,16 +10,8 @@ export default class Resume extends React.Component {
 	constructor(props) {
 		super(props);
 		this.state = {
-			//all tracking outputs
-			educationOpenedCount: 0,
-			workexpOpenedCount: 0,
-			notesOpenedCount: 0,
-
 			x: 0,
 			y: 0,
-
-			modalOpened: false,
-			enterID: "",
 
 			educationSectionOpened: false,
 			workSectionOpened: false,
@@ -64,132 +55,27 @@ export default class Resume extends React.Component {
 			bulletList: [],
 			remoteNotesText: "",
 		};
-		this.collapsibleOpened = this.collapsibleOpened.bind(this);
-		this.submitUserID = this.submitUserID.bind(this);
-		this.handleChange = this.handleChange.bind(this);
+
+		// Add props to this
+		this.qualtricsUserId = this.props.qualtricsUserId;
+		this.recordActivity = this.props.recordActivity;
+
+		this.collapsibleOpened = this.collapsibleToggled.bind(this);
 		this.voteClick = this.voteClick.bind(this);
 		this.renderBulletList = this.renderBulletList.bind(this);
 		this.positionList = [];
 		this.mouseCounter = 0;
-		this.activityCounter = 1;
-		this.IDlist = [
-			"sheep",
-			"koala",
-			"whale",
-			"dolphin",
-			"panda",
-			"snake",
-			"bear",
-			"lion",
-			"tiger",
-			"celery",
-			"carrot",
-			"pizza",
-			"salad",
-			"chicken",
-			"burger",
-			"rice",
-			"eggs",
-			"soup",
-			"green",
-			"blue",
-			"purple",
-			"red",
-			"orange",
-			"yellow",
-			"silver",
-			"olive",
-			"pink",
-			"gold",
-			"shirt",
-			"pants",
-			"tree",
-			"smoke",
-			"planet",
-			"pencil",
-			"pen",
-			"cookie",
-			"cake",
-			"tire",
-			"phone",
-			"plant",
-			"north",
-			"east",
-			"south",
-			"west",
-			"right",
-			"left",
-			"canyon",
-			"mountain",
-			"park",
-			"field",
-			"snow",
-			"rain",
-			"beach",
-			"ocean",
-			"wind",
-			"storm",
-			"thunder",
-			"hill",
-			"road",
-			"traffic",
-			"cliff",
-			"waves",
-			"shell",
-			"island",
-			"sand",
-			"umbrella",
-			"swim",
-			"climb",
-			"dive",
-			"surf",
-
-			"hike",
-			"run",
-			"walk",
-			"bike",
-			"canoe",
-			"boat",
-			"ice",
-			"air",
-			"river",
-			"pond",
-			"lake",
-			"stream",
-			"canal",
-			"street",
-			"coffee",
-			"tea",
-			"soda",
-			"lunch",
-			"dinner",
-			"snack",
-			"eat",
-			"drink",
-			"sleep",
-			"wake",
-			"jump",
-			"fall",
-			"alaska",
-			"florida",
-			"idaho",
-			"ohio",
-		];
 	}
 
 	componentDidMount() {
-		console.log("study: " + this.props.studyVersion);
-		firebase.firestore();
-
 		this.setState({ studyVersion: this.props.studyVersion });
-
-		console.log("resume: " + this.props.resumeVersion);
 		this.setState({ resumeVersion: this.props.resumeVersion }, () => {
+			// On the first resume, decide the data the user will see in the whole study
 			if (this.state.resumeVersion === 1) {
-				this.generateUniqueID();
-			} else {
-				this.setState({ modalOpened: true });
+				this.selectValues();
 			}
+			// Show the appropriate resume data
+			this.populateValues();
 		});
 	}
 
@@ -199,7 +85,7 @@ export default class Resume extends React.Component {
 		}
 	}
 
-	//called from generateUniqueID function (so only called for resume 1)
+	/** Decide what values they will see in the study */
 	selectValues() {
 		const db = firebase.firestore();
 
@@ -375,8 +261,8 @@ export default class Resume extends React.Component {
 		}
 
 		//initialize resume 1 values
-		db.collection("userIDs")
-			.doc(this.state.currentUserID)
+		db.collection("responseIDs")
+			.doc(this.qualtricsUserId)
 			.collection("values shown")
 			.doc("resume 1")
 			.set({
@@ -390,6 +276,7 @@ export default class Resume extends React.Component {
 			});
 	}
 
+	/** Read the database to see what condition the user is in, and then display the appropriate data */
 	populateValues() {
 		const db = firebase.firestore();
 
@@ -401,8 +288,8 @@ export default class Resume extends React.Component {
 				this.setState({ city: doc.data().city });
 			});
 
-		db.collection("userIDs")
-			.doc(this.state.currentUserID)
+		db.collection("responseIDs")
+			.doc(this.qualtricsUserId)
 			.collection("values shown")
 			.doc("resume 1")
 			.get()
@@ -443,7 +330,6 @@ export default class Resume extends React.Component {
 
 				//parenthood - show the opposite
 				if (doc.data().parenthood === true) {
-					console.log("TRUE");
 					db.collection("resume")
 						.doc("notes from initial phone screen")
 						.get()
@@ -461,7 +347,6 @@ export default class Resume extends React.Component {
 						});
 					parenthood = false;
 				} else {
-					console.log("FALSE");
 					db.collection("resume")
 						.doc("notes from initial phone screen")
 						.get()
@@ -573,59 +458,6 @@ export default class Resume extends React.Component {
 			});
 	}
 
-	generateUniqueID = () => {
-		var rand = Math.floor(Math.random() * 100) + 1;
-		let r = Math.floor((Math.random() * 100 + 1) % this.IDlist.length);
-		if (r < 10 || r > this.IDlist.length) {
-			//TODO: is this correct?
-			this.generateUniqueID();
-			return;
-		}
-		let userID = this.IDlist[r] + "" + rand;
-		console.log("user ID: " + userID);
-
-		//check database to make sure it hasnt already been generated
-		const db = firebase.firestore();
-		const idRef = db
-			.collection("studies")
-			.doc("study " + this.state.studyVersion)
-			.collection("userIDs")
-			.doc(userID);
-		idRef.get().then((docSnapshot) => {
-			if (docSnapshot.exists) {
-				idRef.onSnapshot((doc) => {
-					//console.log("ALREADY EXISTS")
-					this.generateUniqueID();
-				});
-			} else {
-				//console.log("DOES NOT EXIST")
-
-				//add userID to database
-				db.collection("studies")
-					.doc("study " + this.state.studyVersion)
-					.collection("userIDs")
-					.doc(userID)
-					.set({
-						//initialized: true,
-					});
-
-				//display ID to user
-				this.setState({ currentUserID: userID }, () => {
-					this.selectValues();
-					db.collection("settings")
-						.doc("mouse tracking")
-						.get()
-						.then((doc) => {
-							this.timer = setInterval(
-								this.updateMouseCSV,
-								doc.data().interval
-							);
-						});
-				});
-			}
-		});
-	};
-
 	renderBulletList = () => {
 		if (this.state.bulletList.length > 0) {
 			let viewBulletList = [];
@@ -643,171 +475,30 @@ export default class Resume extends React.Component {
 	renderPositionList = () => {
 		if (this.positionList.length > 0) {
 			let viewPositionList = [];
-			this.positionList.forEach((item, index) => {
-				viewPositionList.push(
-					<div key={index}>
-						<div className="votingblock">
-							<div id="vertical">
-								<img
-									name={"work" + (index + 1) + "_up"}
-									src={
-										this.state["work" + (index + 1) + "_up"]
-											? imageToURL("upvote_selected")
-											: imageToURL("upvote")
-									}
-									onClick={this.voteClick}
-									alt="upvote"
-								/>
-								<img
-									name={"work" + (index + 1) + "_q"}
-									src={
-										this.state["work" + (index + 1) + "_q"]
-											? imageToURL("circle_selected")
-											: imageToURL("circle")
-									}
-									onClick={this.voteClick}
-									alt="question mark"
-								/>
-								<img
-									name={"work" + (index + 1) + "_down"}
-									src={
-										this.state["work" + (index + 1) + "_down"]
-											? imageToURL("downvote_selected")
-											: imageToURL("downvote")
-									}
-									onClick={this.voteClick}
-									alt="downvote"
-								/>
-							</div>
-							<div id="subtext">
-								{" "}
-								{item.data().title}
-								<div id="horizontal">
-									<div id="subinfo">{item.data().company}</div>
 
-									{/*remote && study version 2*/}
-									{this.state.studyVersion === 2 &&
-										this.state.remote &&
-										index === 0 && (
-											<div id="subinfo">
-												<i>Remote</i>
-											</div>
-										)}
-									{this.state.studyVersion === 2 &&
-										!this.state.remote &&
-										index === 0 && (
-											<div id="subinfo">
-												<i>{this.state.city}</i>
-											</div>
-										)}
-									{this.state.studyVersion === 2 && index !== 0 && (
-										<div id="subinfo">
-											<i>{this.state.city}</i>
-										</div>
-									)}
-								</div>
-								<div id="subinfogray">{item.data().duration}</div>
-								<div id="subinfo">{item.data().description}</div>
-							</div>
-						</div>
-						<Divider />
-					</div>
-				);
-			});
 			return viewPositionList;
 		} else {
 			return null;
 		}
 	};
 
-	collapsibleOpened(e) {
-		const db = firebase.firestore();
-
-		this.activityCounter = this.activityCounter + 1;
-		let count = this.activityCounter.toString();
-		let description = "";
-
-		var options = { hour12: false };
-		let time = new Date().toLocaleString("en-US", options);
-		//let newObj = []
-		if (e === 0) {
-			//console.log(time + " education");
-			this.setState((prevState) => {
-				return { educationOpenedCount: prevState.educationOpenedCount + 1 };
-			});
-			description = "opened education section";
-			//newObj = [time, "opened education section"]
-		} else if (e === 1) {
-			//console.log(time + " work");
-			this.setState((prevState) => {
-				return { workexpOpenedCount: prevState.workexpOpenedCount + 1 };
-			});
-			description = "opened work section";
-			//newObj = [time, "opened work section"]
+	/** Called when a section is toggled open/closed */
+	collapsibleToggled(eventKey) {
+		if (eventKey === 0) {
+			// Education Section
+			this.recordActivity(
+				"collapsibleToggled",
+				"education",
+				"toggled education section "
+			);
+		} else if (eventKey === 1) {
+			// Work Section
+			this.recordActivity(
+				"collapsibleToggled",
+				"work",
+				"toggled work section "
+			);
 		}
-		//console.log(newObj)
-		//this.setState({activityData: [...this.state.activityData, newObj]})
-
-		db.collection("studies")
-			.doc("study " + this.state.studyVersion)
-			.collection("userIDs")
-			.doc(this.state.currentUserID)
-			.collection("activityData_resume" + this.state.resumeVersion.toString())
-			.doc(count)
-			.set({
-				time: time,
-				description: description,
-			});
-	}
-
-	submitUserID() {
-		if (this.state.enterID === null || this.state.enterID === "") {
-			this.setState({ errorMessage: true });
-			return;
-		}
-
-		let userID = this.state.enterID.replace(/[.,/#!$%^&*;:{}=\-_'`~()]/g, "");
-		userID = userID.replace(/\s{2,}/g, " ");
-		userID = userID.replace(/\s/g, "");
-		//console.log("USER ID:" + userID + "hello")
-
-		//read database to see if this ID exists
-		const db = firebase.firestore();
-		const idRef = db
-			.collection("studies")
-			.doc("study " + this.state.studyVersion)
-			.collection("userIDs")
-			.doc(userID);
-		idRef.get().then((docSnapshot) => {
-			if (docSnapshot.exists) {
-				idRef.onSnapshot((doc) => {
-					console.log("VALID: THIS DOES EXIST");
-					this.setState({ errorMessage: false });
-					this.setState({ currentUserID: userID }, () => {
-						this.populateValues();
-						db.collection("settings")
-							.doc("mouse tracking")
-							.get()
-							.then((doc) => {
-								this.timer = setInterval(
-									this.updateMouseCSV,
-									doc.data().interval
-								);
-							});
-						this.setState({ modalOpened: false });
-					});
-				});
-			} else {
-				console.log("INVALID: DOES NOT EXIST");
-
-				//prompt them to re-enter
-				this.setState({ errorMessage: true });
-			}
-		});
-	}
-
-	handleChange(event) {
-		this.setState({ enterID: event.target.value });
 	}
 
 	voteClick(event) {
@@ -891,208 +582,247 @@ export default class Resume extends React.Component {
 			<div className="overall">
 				<div className="App">
 					<div className="resume">
-						<ModalReact className="modal_dtp" isOpen={this.state.modalOpened}>
-							<div>enter code: </div>
-							<input
-								onChange={this.handleChange.bind(this)}
-								value={this.state.enterID}
+						<div>
+							<img
+								className="profile_image"
+								src={imageToURL(this.state.gender_icon)}
+								alt="the candidate"
 							/>
-							<button onClick={() => this.submitUserID()}> Submit </button>
-							{this.state.errorMessage && (
-								<div id="red">Invalid ID. Please re-enter.</div>
-							)}
-						</ModalReact>
-
-						{!this.state.modalOpened && (
-							<div>
-								<img
-									className="profile_image"
-									src={imageToURL(this.state.gender_icon)}
-									alt="a man"
-								/>
-								<div className="header">
-									Candidate {this.state.resumeVersion === 1 ? "A" : "B"}
-								</div>
-
-								<div className="votingblock_notes">
-									<VotingButtons
-										state={this.state}
-										onClick={this.voteClick}
-										sectionName="education"
-									/>
-									<div className="notes">
-										Notes from Initial Phone Screen:
-										<span id="subtext_bullet">
-											<ul>
-												{this.state.studyVersion === 2 && this.state.remote && (
-													<li>{this.state.remoteNotesText}</li>
-												)}
-												{this.renderBulletList()}
-											</ul>
-										</span>
-										{/*<span id="subtext"> {this.state.initialNotes} {this.state.studyVersion === 2 && this.state.remote && " + working remotely"}</span>*/}
-									</div>
-								</div>
-
-								<Accordion>
-									<Card>
-										<Card.Header
-											style={{
-												background: "white",
-												paddingLeft: 0,
-												paddingRight: 0,
-											}}
-										>
-											<Accordion.Toggle
-												as={Button}
-												style={{
-													color: "black",
-													width: "100%",
-													display: "flex",
-													flexDirection: "row",
-													justifyContent: "space-between",
-													fontSize: "18px",
-													alignItems: "center",
-												}}
-												variant="link"
-												eventKey="0"
-												onClick={() =>
-													this.setState(
-														{
-															educationSectionOpened:
-																!this.state.educationSectionOpened,
-														},
-														() => {
-															this.collapsibleOpened(0);
-															if (this.state.educationSectionOpened) {
-																this.setState({ workSectionOpened: false });
-															}
-														}
-													)
-												}
-											>
-												Education{" "}
-												<img
-													id="toggle_icon"
-													src={
-														this.state.educationSectionOpened
-															? imageToURL("minus_icon")
-															: imageToURL("plus_icon")
-													}
-													alt="toggle icon"
-												/>
-											</Accordion.Toggle>
-										</Card.Header>
-										<Accordion.Collapse eventKey="0">
-											<Card.Body>
-												<div className="votingblock">
-													<div id="vertical">
-														<img
-															name="education_up"
-															src={
-																this.state.education_up
-																	? imageToURL("upvote_selected")
-																	: imageToURL("upvote")
-															}
-															onClick={this.voteClick}
-															alt="upvote"
-														/>
-														<img
-															name="education_q"
-															src={
-																this.state.education_q
-																	? imageToURL("circle_selected")
-																	: imageToURL("circle")
-															}
-															onClick={this.voteClick}
-															alt="question mark"
-														/>
-														<img
-															name="education_down"
-															src={
-																this.state.education_down
-																	? imageToURL("downvote_selected")
-																	: imageToURL("downvote")
-															}
-															onClick={this.voteClick}
-															alt="downvote"
-														/>
-													</div>
-													<div id="subtext">
-														{this.state.university}
-														<div id="subinfo">
-															{this.state.degree}, {this.state.major}
-														</div>
-														<div id="subinfogray">{this.state.duration}</div>
-													</div>
-												</div>
-											</Card.Body>
-										</Accordion.Collapse>
-									</Card>
-									<Card>
-										<Card.Header
-											style={{
-												background: "white",
-												paddingLeft: 0,
-												paddingRight: 0,
-												borderTop: "1px solid black",
-											}}
-										>
-											<Accordion.Toggle
-												as={Button}
-												style={{
-													color: "black",
-													width: "100%",
-													display: "flex",
-													flexDirection: "row",
-													justifyContent: "space-between",
-													fontSize: "18px",
-													alignItems: "center",
-												}}
-												variant="link"
-												eventKey="1"
-												onClick={() =>
-													this.setState(
-														{
-															workSectionOpened: !this.state.workSectionOpened,
-														},
-														() => {
-															this.collapsibleOpened(1);
-															if (this.state.workSectionOpened) {
-																this.setState({
-																	educationSectionOpened: false,
-																});
-															}
-														}
-													)
-												}
-											>
-												Work Experience{" "}
-												<img
-													id="toggle_icon"
-													src={
-														this.state.workSectionOpened
-															? imageToURL("minus_icon")
-															: imageToURL("plus_icon")
-													}
-													alt="toggle icon"
-												/>
-											</Accordion.Toggle>
-										</Card.Header>
-										<Accordion.Collapse eventKey="1">
-											<Card.Body>{this.renderPositionList()}</Card.Body>
-										</Accordion.Collapse>
-									</Card>
-								</Accordion>
+							<div className="header">
+								Candidate {this.state.resumeVersion === 1 ? "A" : "B"}
 							</div>
-						)}
+
+							<div className="votingblock_notes">
+								<VotingButtons
+									state={this.state}
+									clickFunction={this.voteClick}
+									sectionName="notes"
+								/>
+
+								<div className="notes">
+									Notes from Initial Phone Screen:
+									<span id="subtext_bullet">
+										<ul>
+											{this.state.studyVersion === 2 && this.state.remote && (
+												<li>{this.state.remoteNotesText}</li>
+											)}
+											{this.renderBulletList()}
+										</ul>
+									</span>
+									{/*<span id="subtext"> {this.state.initialNotes} {this.state.studyVersion === 2 && this.state.remote && " + working remotely"}</span>*/}
+								</div>
+							</div>
+
+							<Accordion>
+								<Card>
+									<Card.Header
+										style={{
+											background: "white",
+											paddingLeft: 0,
+											paddingRight: 0,
+										}}
+									>
+										<Accordion.Toggle
+											as={Button}
+											style={{
+												color: "black",
+												width: "100%",
+												display: "flex",
+												flexDirection: "row",
+												justifyContent: "space-between",
+												fontSize: "18px",
+												alignItems: "center",
+											}}
+											variant="link"
+											eventKey="0"
+											onClick={() =>
+												this.setState(
+													{
+														educationSectionOpened:
+															!this.state.educationSectionOpened,
+													},
+													() => {
+														this.collapsibleToggled(0);
+														if (this.state.educationSectionOpened) {
+															this.setState({ workSectionOpened: false });
+														}
+													}
+												)
+											}
+										>
+											Education{" "}
+											<img
+												id="toggle_icon"
+												src={
+													this.state.educationSectionOpened
+														? imageToURL("minus_icon")
+														: imageToURL("plus_icon")
+												}
+												alt="toggle icon"
+											/>
+										</Accordion.Toggle>
+									</Card.Header>
+
+									<Accordion.Collapse eventKey="0">
+										<Card.Body>
+											<div className="votingblock">
+												<div id="vertical">
+													<img
+														name="education_up"
+														src={
+															this.state.education_up
+																? imageToURL("upvote_selected")
+																: imageToURL("upvote")
+														}
+														onClick={this.voteClick}
+														alt="upvote"
+													/>
+													<img
+														name="education_q"
+														src={
+															this.state.education_q
+																? imageToURL("circle_selected")
+																: imageToURL("circle")
+														}
+														onClick={this.voteClick}
+														alt="question mark"
+													/>
+													<img
+														name="education_down"
+														src={
+															this.state.education_down
+																? imageToURL("downvote_selected")
+																: imageToURL("downvote")
+														}
+														onClick={this.voteClick}
+														alt="downvote"
+													/>
+												</div>
+												<div id="subtext">
+													{this.state.university}
+													<div id="subinfo">
+														{this.state.degree}, {this.state.major}
+													</div>
+													<div id="subinfogray">{this.state.duration}</div>
+												</div>
+											</div>
+										</Card.Body>
+									</Accordion.Collapse>
+								</Card>
+
+								<Card>
+									<Card.Header
+										style={{
+											background: "white",
+											paddingLeft: 0,
+											paddingRight: 0,
+											borderTop: "1px solid black",
+										}}
+									>
+										<Accordion.Toggle
+											as={Button}
+											style={{
+												color: "black",
+												width: "100%",
+												display: "flex",
+												flexDirection: "row",
+												justifyContent: "space-between",
+												fontSize: "18px",
+												alignItems: "center",
+											}}
+											variant="link"
+											eventKey="1"
+											onClick={() =>
+												this.setState(
+													{
+														workSectionOpened: !this.state.workSectionOpened,
+													},
+													() => {
+														this.collapsibleToggled(1);
+														if (this.state.workSectionOpened) {
+															this.setState({
+																educationSectionOpened: false,
+															});
+														}
+													}
+												)
+											}
+										>
+											Work Experience{" "}
+											<img
+												id="toggle_icon"
+												src={
+													this.state.workSectionOpened
+														? imageToURL("minus_icon")
+														: imageToURL("plus_icon")
+												}
+												alt="toggle icon"
+											/>
+										</Accordion.Toggle>
+									</Card.Header>
+
+									{/* Position List */}
+									<Accordion.Collapse eventKey="1">
+										<Card.Body>
+											{this.positionList.map((item, index) => {
+												return (
+													<div key={index}>
+														<div className="votingblock">
+															<VotingButtons
+																state={this.state}
+																clickFunction={this.voteClick}
+																sectionName={`work${index + 1}`}
+															/>
+
+															<div id="subtext">
+																{" "}
+																{item.data().title}
+																<div id="horizontal">
+																	<div id="subinfo">{item.data().company}</div>
+
+																	{/*remote && study version 2*/}
+																	{this.state.studyVersion === 2 &&
+																		this.state.remote &&
+																		index === 0 && (
+																			<div id="subinfo">
+																				<i>Remote</i>
+																			</div>
+																		)}
+
+																	{this.state.studyVersion === 2 &&
+																		!this.state.remote &&
+																		index === 0 && (
+																			<div id="subinfo">
+																				<i>{this.state.city}</i>
+																			</div>
+																		)}
+
+																	{this.state.studyVersion === 2 &&
+																		index !== 0 && (
+																			<div id="subinfo">
+																				<i>{this.state.city}</i>
+																			</div>
+																		)}
+																</div>
+																<div id="subinfogray">
+																	{item.data().duration}
+																</div>
+																<div id="subinfo">
+																	{item.data().description}
+																</div>
+															</div>
+														</div>
+														<Divider />
+													</div>
+												);
+											})}
+										</Card.Body>
+									</Accordion.Collapse>
+								</Card>
+							</Accordion>
+						</div>
 					</div>
 				</div>
-				{this.state.resumeVersion === 1 && (
-					<div className="userID">
-						<strong>{this.state.currentUserID}</strong>
-					</div>
-				)}
 			</div>
 		);
 	}

@@ -6,12 +6,54 @@ import ReadData from "./ReadData";
 import LandingPage from "./LandingPage";
 import "bootstrap/dist/css/bootstrap.min.css";
 
+var moment = require("moment-timezone");
+
 // import Admin from "./Admin";
 
-class App extends React.Component {
+export default class App extends React.Component {
 	constructor(props) {
 		super(props);
-		this.state = {};
+		this.activityCounter = 1;
+		this.recordActivity = this.recordActivity.bind(this);
+
+		// This is hacky, but ReactRouter can't parse URL parameters unless inside a Route
+		const loc = document.location.hash;
+		this.studyVersion = parseInt(loc.split("/")[1]);
+		this.resumeVersion = parseInt(loc.split("/")[2]);
+		this.qualtricsUserId = loc.split("/")[3];
+
+		// Print for debugging purposes within Qualtrics
+		console.log("qualtricsUserId: " + this.qualtricsUserId);
+	}
+
+	/** Record the data in Firebase */
+	async recordActivity(category, value, description) {
+		// This will be the ID of the activity in Firebase -- a string, padded to 5 digits so alphabetical sorting works
+		const id = this.activityCounter.toString().padStart(5, "0");
+		this.activityCounter = this.activityCounter + 1;
+
+		const now = moment();
+
+		if (this.DATABASE) {
+			this.DATABASE.collection("userIDs")
+				.doc(this.qualtricsUserId)
+				.collection("activityData_resume" + this.resumeVersion.toString())
+				.doc(id)
+				.set({
+					category: category,
+					description: description,
+					value: value,
+					timestamp: new Date(now),
+					timeEpoch: Number(now.format("x")),
+					timeReadable: now.tz("America/Los_Angeles").format("M-D-YY h:mm:ssa"),
+				});
+		}
+
+		console.log(id + " " + category + ": " + value + " -- " + description);
+	}
+
+	componentDidMount() {
+		this.recordActivity("loading", "accessed", "App mounted");
 	}
 
 	render() {
@@ -19,49 +61,23 @@ class App extends React.Component {
 			<div>
 				<HashRouter>
 					<Route
-						path="/v1r1"
+						path="/:studyVersion/:resumeVersion/:qualtricsUserId"
 						render={(props) => (
-							<Resume {...props} studyVersion={1} resumeVersion={1} />
-						)}
-					/>
-					<Route
-						path="/v1r2"
-						render={(props) => (
-							<Resume {...props} studyVersion={1} resumeVersion={2} />
-						)}
-					/>
-					<Route
-						path="/v2r1"
-						render={(props) => (
-							<Resume {...props} studyVersion={2} resumeVersion={1} />
-						)}
-					/>
-					<Route
-						path="/v2r2"
-						render={(props) => (
-							<Resume {...props} studyVersion={2} resumeVersion={2} />
-						)}
-					/>
-					<Route
-						path="/v3r1"
-						render={(props) => (
-							<Resume {...props} studyVersion={3} resumeVersion={1} />
-						)}
-					/>
-					<Route
-						path="/v3r2"
-						render={(props) => (
-							<Resume {...props} studyVersion={3} resumeVersion={2} />
+							<Resume
+								{...props}
+								studyVersion={this.studyVersion}
+								resumeVersion={this.resumeVersion}
+								recordActivity={this.recordActivity}
+								qualtricsUserId={this.qualtricsUserId}
+							/>
 						)}
 					/>
 
-					<Route path="/admin" render={(props) => <ReadData />} />
+					<Route path="/admin" render={<ReadData />} />
 
-					<Route path="/" exact render={(props) => <LandingPage />} />
+					<Route path="/" exact render={<LandingPage />} />
 				</HashRouter>
 			</div>
 		);
 	}
 }
-
-export default App;
