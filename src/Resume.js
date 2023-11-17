@@ -10,50 +10,9 @@ export default class Resume extends React.Component {
 	constructor(props) {
 		super(props);
 		this.state = {
-			x: 0,
-			y: 0,
-
-			educationSectionOpened: false,
-			workSectionOpened: false,
-
-			city: "",
-
-			initialNotes: "",
-			degree: "",
-			distinction: "",
-			duration: "",
-			major: "",
-			university: "",
-
-			parenthood: true,
-			education: 0,
-			work1: 0,
-			work2: 0,
-			remote: true,
-
-			//upvote + downvote + question mark
-			education_up: false,
-			education_q: false,
-			education_down: false,
-
-			work1_up: false,
-			work1_q: false,
-			work1_down: false,
-
-			work2_up: false,
-			work2_q: false,
-			work2_down: false,
-
-			work3_up: false,
-			work3_q: false,
-			work3_down: false,
-
-			notes_up: false,
-			notes_q: false,
-			notes_down: false,
-
-			bulletList: [],
-			remoteNotesText: "",
+			// x: 0,
+			// y: 0,
+			positionList: [],
 		};
 
 		// Add props to this
@@ -62,8 +21,6 @@ export default class Resume extends React.Component {
 
 		this.collapsibleOpened = this.collapsibleToggled.bind(this);
 		this.voteClick = this.voteClick.bind(this);
-		this.renderBulletList = this.renderBulletList.bind(this);
-		this.positionList = [];
 		this.mouseCounter = 0;
 	}
 
@@ -288,6 +245,7 @@ export default class Resume extends React.Component {
 				this.setState({ city: doc.data().city });
 			});
 
+		// From the database, get the values that were shown to this user for resume 1
 		db.collection("responseIDs")
 			.doc(this.qualtricsUserId)
 			.collection("values shown")
@@ -295,32 +253,17 @@ export default class Resume extends React.Component {
 			.get()
 			.then((doc) => {
 				let gender = null;
-				let parenthood = null;
-				let education = null;
+				let resume2education = null;
 				let work1 = null;
 				let work2 = null;
 				let work3 = null;
 				let remote = null;
 
-				//gender - show the same
-				if (doc.data().remoteNotesText === 1) {
-					db.collection("resume")
-						.doc("notes from initial phone screen")
-						.get()
-						.then((doc) => {
-							this.setState({ remoteNotesText: doc.data().remote_text_1 });
-						});
-				} else {
-					db.collection("resume")
-						.doc("notes from initial phone screen")
-						.get()
-						.then((doc) => {
-							this.setState({ remoteNotesText: doc.data().remote_text_1 });
-						});
-				}
+				const resume1data = doc.data();
 
-				//remote notes text
-				if (doc.data().gender === "man") {
+				this.setState({ remoteNotesText: resume1data.remote_text_1 });
+
+				if (resume1data.gender === "man") {
 					this.setState({ gender_icon: "man" });
 					gender = "man";
 				} else {
@@ -328,45 +271,32 @@ export default class Resume extends React.Component {
 					gender = "woman";
 				}
 
-				//parenthood - show the opposite
-				if (doc.data().parenthood === true) {
-					db.collection("resume")
-						.doc("notes from initial phone screen")
-						.get()
-						.then((doc) => {
-							let temp = doc.data().nonparent.toString();
-							if (gender === "man") {
-								temp = temp.replace("[pronoun]", "his");
-							} else {
-								temp = temp.replace("[pronoun]", "her");
-							}
-							var split = temp.split(".");
-							this.setState({ bulletList: split });
+				// Initial phone screen notes are based on parent/nonparent
+				db.collection("resume")
+					.doc("notes from initial phone screen")
+					.get()
+					.then((doc) => {
+						let parenthoodText = null;
+						if (resume1data.parenthood === true) {
+							parenthoodText = doc.data().nonparent.toString();
+						} else {
+							parenthoodText = doc.data().parent.toString();
+						}
 
-							//this.setState({initialNotes: doc.data().nonparent})
-						});
-					parenthood = false;
-				} else {
-					db.collection("resume")
-						.doc("notes from initial phone screen")
-						.get()
-						.then((doc) => {
-							let temp = doc.data().parent.toString();
-							if (gender === "man") {
-								temp = temp.replace("[pronoun]", "his");
-							} else {
-								temp = temp.replace("[pronoun]", "her");
-							}
-							var split = temp.split(".");
-							this.setState({ bulletList: split });
+						let split = parenthoodText
+							// Split each sentence into a bullet point,
+							.split(".")
+							// Clean up whitespace
+							.map((str) => str.trim())
+							// Remove any empty strings (by removing falsy values)
+							.filter(Boolean);
+						this.setState({ bulletList: split });
+					});
 
-							//this.setState({initialNotes: doc.data().parent})
-						});
-					parenthood = true;
-				}
+				// TODO: read db.collection.resume once
 
 				//education - show the opposite
-				if (doc.data().education === "a") {
+				if (resume1data.education === "a") {
 					db.collection("resume")
 						.doc("education b")
 						.get()
@@ -377,7 +307,7 @@ export default class Resume extends React.Component {
 							this.setState({ major: doc.data().major });
 							this.setState({ university: doc.data().university });
 						});
-					education = "b";
+					resume2education = "b";
 				} else {
 					db.collection("resume")
 						.doc("education a")
@@ -389,16 +319,17 @@ export default class Resume extends React.Component {
 							this.setState({ major: doc.data().major });
 							this.setState({ university: doc.data().university });
 						});
-					education = "a";
+					resume2education = "a";
 				}
 
+				// TODO: haven't cleaned up below this yet
 				//work1 - show the opposite
 				if (doc.data().work1 === "a") {
 					db.collection("resume")
 						.doc("work box 1b")
 						.get()
 						.then((doc) => {
-							this.positionList.push(doc);
+							this.addPositionToList(doc);
 						});
 					work1 = "b";
 				} else {
@@ -406,7 +337,7 @@ export default class Resume extends React.Component {
 						.doc("work box 1a")
 						.get()
 						.then((doc) => {
-							this.positionList.push(doc);
+							this.addPositionToList(doc);
 						});
 					work1 = "a";
 				}
@@ -417,7 +348,7 @@ export default class Resume extends React.Component {
 						.doc("work box 2b")
 						.get()
 						.then((doc) => {
-							this.positionList.push(doc);
+							this.addPositionToList(doc);
 						});
 					work2 = "b";
 				} else {
@@ -425,7 +356,7 @@ export default class Resume extends React.Component {
 						.doc("work box 2a")
 						.get()
 						.then((doc) => {
-							this.positionList.push(doc);
+							this.addPositionToList(doc);
 						});
 					work2 = "a";
 				}
@@ -448,8 +379,8 @@ export default class Resume extends React.Component {
 					.doc("resume 2")
 					.set({
 						gender: gender,
-						parenthood: parenthood,
-						education: education,
+						parenthood: !resume1data.parenthood,
+						education: resume2education,
 						work1: work1,
 						work2: work2,
 						work3: work3,
@@ -458,32 +389,10 @@ export default class Resume extends React.Component {
 			});
 	}
 
-	renderBulletList = () => {
-		if (this.state.bulletList.length > 0) {
-			let viewBulletList = [];
-			this.state.bulletList.forEach((item, index) => {
-				if (item !== " " && item !== "" && item !== null) {
-					viewBulletList.push(<li key={index}>{item}</li>);
-				}
-			});
-			return viewBulletList;
-		} else {
-			return null;
-		}
-	};
-
-	renderPositionList = () => {
-		if (this.positionList.length > 0) {
-			let viewPositionList = [];
-
-			return viewPositionList;
-		} else {
-			return null;
-		}
-	};
-
+	// TODO: move to separate file
 	/** Called when a section is toggled open/closed */
 	collapsibleToggled(eventKey) {
+		// TODO: add open/closed based on state
 		if (eventKey === 0) {
 			// Education Section
 			this.recordActivity(
@@ -501,6 +410,8 @@ export default class Resume extends React.Component {
 		}
 	}
 
+	// TODO: move to separate file
+	/** Called when one of the upvote/circle/downvote buttons are clicked */
 	voteClick(event) {
 		const db = firebase.firestore();
 
@@ -577,7 +488,19 @@ export default class Resume extends React.Component {
 		);
 	}
 
+	/** Helper function: append a new position to the positionList */
+	addPositionToList(newPosition) {
+		this.setState((prevState) => ({
+			positionList: [...prevState.positionList, newPosition],
+		}));
+	}
+
 	render() {
+		// If our data hasn't loaded yet, show a loading screen
+		if (!(this.state.bulletList && this.state.positionList.length > 0)) {
+			return <h1>Loading...</h1>;
+		}
+
 		return (
 			<div className="overall">
 				<div className="App">
@@ -603,13 +526,14 @@ export default class Resume extends React.Component {
 									Notes from Initial Phone Screen:
 									<span id="subtext_bullet">
 										<ul>
-											{this.state.studyVersion === 2 && this.state.remote && (
+											{this.state.remoteNotesText && (
 												<li>{this.state.remoteNotesText}</li>
 											)}
-											{this.renderBulletList()}
+											{this.state.bulletList.map((item, index) => {
+												return <li key={index}>{item}</li>;
+											})}
 										</ul>
 									</span>
-									{/*<span id="subtext"> {this.state.initialNotes} {this.state.studyVersion === 2 && this.state.remote && " + working remotely"}</span>*/}
 								</div>
 							</div>
 
@@ -636,6 +560,7 @@ export default class Resume extends React.Component {
 											variant="link"
 											eventKey="0"
 											onClick={() =>
+												// TODO: clean this up
 												this.setState(
 													{
 														educationSectionOpened:
@@ -666,38 +591,10 @@ export default class Resume extends React.Component {
 									<Accordion.Collapse eventKey="0">
 										<Card.Body>
 											<div className="votingblock">
-												<div id="vertical">
-													<img
-														name="education_up"
-														src={
-															this.state.education_up
-																? imageToURL("upvote_selected")
-																: imageToURL("upvote")
-														}
-														onClick={this.voteClick}
-														alt="upvote"
-													/>
-													<img
-														name="education_q"
-														src={
-															this.state.education_q
-																? imageToURL("circle_selected")
-																: imageToURL("circle")
-														}
-														onClick={this.voteClick}
-														alt="question mark"
-													/>
-													<img
-														name="education_down"
-														src={
-															this.state.education_down
-																? imageToURL("downvote_selected")
-																: imageToURL("downvote")
-														}
-														onClick={this.voteClick}
-														alt="downvote"
-													/>
-												</div>
+												<VotingButtons
+													state={this.state}
+													sectionName={"education"}
+												/>
 												<div id="subtext">
 													{this.state.university}
 													<div id="subinfo">
@@ -748,7 +645,7 @@ export default class Resume extends React.Component {
 												)
 											}
 										>
-											Work Experience{" "}
+											Work Experience {/* TODO: make toggle bars a component */}
 											<img
 												id="toggle_icon"
 												src={
@@ -764,7 +661,7 @@ export default class Resume extends React.Component {
 									{/* Position List */}
 									<Accordion.Collapse eventKey="1">
 										<Card.Body>
-											{this.positionList.map((item, index) => {
+											{this.state.positionList.map((item, index) => {
 												return (
 													<div key={index}>
 														<div className="votingblock">
@@ -835,6 +732,7 @@ function imageToURL(imageName) {
 	return `${process.env.PUBLIC_URL}/images/${imageName}.png`;
 }
 
+// TODO: default params for state, clickFunction
 /**
  * Component: upvote, circle, and downvote, in traffic light colors.
  */
