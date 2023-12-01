@@ -266,10 +266,10 @@ export default class Resume extends React.Component {
 				this.setState({ remoteNotesText: resume1data.remote_text_1 });
 
 				if (resume1data.gender === "man") {
-					this.setState({ gender_icon: "man" });
+					this.setState({ gender_icon: "male_user" });
 					gender = "man";
 				} else {
-					this.setState({ gender_icon: "woman" });
+					this.setState({ gender_icon: "female_user" });
 					gender = "woman";
 				}
 
