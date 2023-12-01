@@ -73,9 +73,9 @@ export default class App extends React.Component {
 						)}
 					/>
 
-					<Route path="/admin" render={<ReadData />} />
+					{/* <Route path="/admin" render={<ReadData />} /> */}
 
-					<Route path="/" exact render={<LandingPage />} />
+					<Route path="/" exact render={() => <LandingPage />} />
 				</HashRouter>
 			</div>
 		);

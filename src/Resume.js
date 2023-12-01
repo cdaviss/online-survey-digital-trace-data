@@ -15,7 +15,7 @@ export default class Resume extends React.Component {
 			positionList: [],
 		};
 
-		// Add props to this
+		// Add props to "this"
 		this.qualtricsUserId = this.props.qualtricsUserId;
 		this.recordActivity = this.props.recordActivity;
 
@@ -61,7 +61,9 @@ export default class Resume extends React.Component {
 				.doc("notes from initial phone screen")
 				.get()
 				.then((doc) => {
-					this.setState({ remoteNotesText: doc.data().remote_text_1 });
+					this.setState({
+						remoteNotesText: doc.data()["not_working_remotely"],
+					});
 					remote_notes = 1;
 				});
 		} else {
@@ -69,7 +71,7 @@ export default class Resume extends React.Component {
 				.doc("notes from initial phone screen")
 				.get()
 				.then((doc) => {
-					this.setState({ remoteNotesText: doc.data().remote_text_2 });
+					this.setState({ remoteNotesText: doc.data()["working_remotely"] });
 					remote_notes = 2;
 				});
 		}
@@ -162,7 +164,7 @@ export default class Resume extends React.Component {
 					.doc("work box 1a")
 					.get()
 					.then((doc) => {
-						this.positionList.push(doc);
+						this.addPositionToList(doc);
 					});
 			});
 			work1 = "a";
@@ -172,7 +174,7 @@ export default class Resume extends React.Component {
 					.doc("work box 1b")
 					.get()
 					.then((doc) => {
-						this.positionList.push(doc);
+						this.addPositionToList(doc);
 					});
 			});
 			work1 = "b";
@@ -186,7 +188,7 @@ export default class Resume extends React.Component {
 					.doc("work box 2a")
 					.get()
 					.then((doc) => {
-						this.positionList.push(doc);
+						this.addPositionToList(doc);
 					});
 			});
 			work2 = "a";
@@ -196,7 +198,7 @@ export default class Resume extends React.Component {
 					.doc("work box 2b")
 					.get()
 					.then((doc) => {
-						this.positionList.push(doc);
+						this.addPositionToList(doc);
 					});
 			});
 			work2 = "b";

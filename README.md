@@ -117,7 +117,7 @@ TODO: finish this section with Claire/Emma/Erin help
 
 In Qualtrics, use the following:
 
-> `<iframe height="830px" width="100%" src="https://YOUR_GITHUB_USERNAME.github.io/online-survey-digital-trace-data/#/${e://Field/studyVersion}/${e://Field/resumeVersion}/${e://Field/ResponseID}"></iframe>`
+> `<iframe height="600px" width="100%" src="https://YOUR_GITHUB_USERNAME.github.io/online-survey-digital-trace-data/#/${e://Field/studyVersion}/${e://Field/resumeVersion}/${e://Field/ResponseID}"></iframe>`
 
 This will produce a URL that looks like <https://YOUR_GITHUB_USERNAME.github.io/online-survey-digital-trace-data/#/NUMBER/NUMBER/QUALTRICS_RESPONSE_ID>.
 
