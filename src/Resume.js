@@ -47,13 +47,6 @@ export default class Resume extends React.Component {
 
 	/** The first resume has randomly-decided values. Decide them and put into state. */
 	getResume1Values(callback) {
-		// Get city
-		this.RESUME_CONTENT.doc("study2_location")
-			.get()
-			.then((doc) => {
-				this.setState({ city: doc.data().city });
-			});
-
 		// Select gender
 		const isMan = Math.random() < 0.5;
 
@@ -85,6 +78,9 @@ export default class Resume extends React.Component {
 			// Now that info is in state, call the callback
 			callback
 		);
+
+		// Create document for this user
+		this.USER_DATA.set({});
 
 		// Store resume 1 values in the database
 		this.USER_DATA.collection("values shown").doc("resume 1").set({
@@ -230,31 +226,16 @@ export default class Resume extends React.Component {
 	// TODO: move to separate file
 	/** Called when one of the upvote/circle/downvote buttons are clicked */
 	voteClick(event) {
-		const db = firebase.firestore();
-
-		this.activityCounter = this.activityCounter + 1;
-		let count = this.activityCounter.toString();
-
-		var options = { hour12: false };
-		let time = new Date().toLocaleString("en-US", options);
-
 		this.setState(
 			{ [event.target.name]: !this.state[event.target.name] },
 			() => {
 				if (this.state[event.target.name]) {
-					db.collection("studies")
-						.doc("study " + this.state.studyVersion)
-						.collection("userIDs")
-						.doc(this.state.currentUserID)
-						.collection(
-							"activityData_resume" + this.state.resumeVersion.toString()
-						)
-						.doc(count)
-						.set({
-							time: time,
-							description: "clicked " + event.target.name + " button",
-						});
-
+					// Record the click
+					this.recordActivity(
+						"click",
+						event.target.name,
+						`clicked ${event.target.name} button`
+					);
 					//unclick the others in the same box
 					if (event.target.name === "work1_up") {
 						this.setState({ work1_down: false, work1_q: false });
@@ -288,18 +269,12 @@ export default class Resume extends React.Component {
 						this.setState({ notes_up: false, notes_down: false });
 					}
 				} else {
-					db.collection("studies")
-						.doc("study " + this.state.studyVersion)
-						.collection("userIDs")
-						.doc(this.state.currentUserID)
-						.collection(
-							"activityData_resume" + this.state.resumeVersion.toString()
-						)
-						.doc(count)
-						.set({
-							time: time,
-							description: "unclicked " + event.target.name + " button",
-						});
+					// Record the click
+					this.recordActivity(
+						"click",
+						event.target.name,
+						`un-clicked ${event.target.name} button`
+					);
 				}
 			}
 		);
@@ -496,7 +471,7 @@ export default class Resume extends React.Component {
 
 																	{/*remote && study version 2*/}
 																	{this.state.studyVersion === 2 &&
-																		this.state.remote &&
+																		this.state.isRemote &&
 																		index === 0 && (
 																			<div id="subinfo">
 																				<i>Remote</i>
@@ -504,7 +479,7 @@ export default class Resume extends React.Component {
 																		)}
 
 																	{this.state.studyVersion === 2 &&
-																		!this.state.remote &&
+																		!this.state.isRemote &&
 																		index === 0 && (
 																			<div id="subinfo">
 																				<i>{this.state.city}</i>

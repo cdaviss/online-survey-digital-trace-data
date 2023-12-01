@@ -82,6 +82,13 @@ export default function LandingPage() {
 				Generate Candidate A resume
 			</button>
 			{iframes.length >= 4 && iframes[3]}
+
+			<h2>Downloading the Data</h2>
+			<p>
+				Once you've run your study, you can download the data in CSV format at{" "}
+				<a href="#/admin">/admin</a>. In this demo, you can download the data no
+				matter what password you put in.
+			</p>
 		</div>
 	);
 }

@@ -1,14 +1,14 @@
 import React from "react";
 import Resume from "./Resume";
-import "./App.css";
 import { HashRouter, Route } from "react-router-dom";
-import ReadData from "./ReadData";
+// import ReadData from "./ReadData";
 import LandingPage from "./LandingPage";
+import Admin from "./Admin";
+import { IS_DEMO_VERSION } from "./config";
+import "./App.css";
 import "bootstrap/dist/css/bootstrap.min.css";
 
 var moment = require("moment-timezone");
-
-// import Admin from "./Admin";
 
 export default class App extends React.Component {
 	constructor(props) {
@@ -26,7 +26,7 @@ export default class App extends React.Component {
 		console.log("qualtricsUserId: " + this.qualtricsUserId);
 	}
 
-	/** Record the data in Firebase */
+	/** Record the data (in Firebase, and print to console) */
 	async recordActivity(category, value, description) {
 		// This will be the ID of the activity in Firebase -- a string, padded to 5 digits so alphabetical sorting works
 		const id = this.activityCounter.toString().padStart(5, "0");
@@ -34,7 +34,7 @@ export default class App extends React.Component {
 
 		const now = moment();
 
-		if (this.DATABASE) {
+		if (!IS_DEMO_VERSION) {
 			this.DATABASE.collection("responseIDs")
 				.doc(this.qualtricsUserId)
 				.collection("activityData_resume" + this.resumeVersion.toString())
@@ -73,7 +73,7 @@ export default class App extends React.Component {
 						)}
 					/>
 
-					{/* <Route path="/admin" render={<ReadData />} /> */}
+					<Route path="/admin" render={() => <Admin />} />
 
 					<Route path="/" exact render={() => <LandingPage />} />
 				</HashRouter>
