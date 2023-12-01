@@ -10,67 +10,14 @@ class Admin extends React.Component {
 	constructor(props) {
 		super(props);
 		this.state = {
-			//displaying mouse or displaying activity+resume (pulled from props)
-			// displayingMouse: false,
-			// displayingResume: false,
-			// displayingActivity: false,
-
-			// generatedID: "",
 			showPasswordErrorMessage: false,
 			isAuthenticated: false,
-
-			//all tracking outputs
-			// activityData: [],
-
-			// loading1: true,
-			// loading2: true,
-			// loading3: true,
-
-			// mousestate: false,
-
-			// study1: [],
-
-			password: "",
-			modalOpened: true,
-
-			// adminVersion: "singleCSV",
-			// buttonText: "Switch to individual CSV format",
+			typedText: "",
 
 			userIDs: [],
 			resumeCSVurl: null,
 			activitiesCSVurl: null,
 		};
-		// this.study2List = [];
-		// this.study2bList = [];
-		// this.study3List = [];
-
-		// this.masterMouse1 = [];
-		// this.masterMouse2 = [];
-		// this.masterMouse2b = [];
-		// this.masterMouse3 = [];
-
-		// this.masterActivity1 = [];
-		// this.masterActivity2 = [];
-		// this.masterActivity2b = [];
-		// this.masterActivity3 = [];
-
-		// this.masterResume1 = [];
-		// this.masterResume2 = [];
-		// this.masterResume2b = [];
-		// this.masterResume3 = [];
-
-		// this.singleMouse1 = [];
-		// this.singleMouse2 = [];
-		// this.singleMouse2b = [];
-		// this.singleMouse3 = [];
-		// this.singleActivity1 = [];
-		// this.singleActivity2 = [];
-		// this.singleActivity2b = [];
-		// this.singleActivity3 = [];
-		// this.singleResume1 = [];
-		// this.singleResume2 = [];
-		// this.singleResume2b = [];
-		// this.singleResume3 = [];
 
 		this.DATABASE = firebase.firestore();
 
@@ -82,20 +29,16 @@ class Admin extends React.Component {
 		ModalReact.setAppElement(rootElement);
 	}
 
-	// componentDidMount() {
-	// 	console.log("mounted");
-	// }
-
 	/** Handles typing in the password box */
 	handleChange(event) {
 		this.setState({ showPasswordErrorMessage: false });
-		this.setState({ password: event.target.value });
+		this.setState({ typedText: event.target.value });
 	}
 
 	/** When the submit button is clicked */
 	submitPassword() {
-		if (this.state.password === adminPassword || IS_DEMO_VERSION) {
-			this.setState({ modalOpened: false, isAuthenticated: true });
+		if (this.state.typedText === adminPassword || IS_DEMO_VERSION) {
+			this.setState({ isAuthenticated: true });
 			this.fetchData();
 		} else {
 			this.setState({ showPasswordErrorMessage: true, isAuthenticated: false });
@@ -206,52 +149,8 @@ class Admin extends React.Component {
 		});
 	}
 
-	// renderMouseData = (studyVersion) => {
-	// 	let text = "masterMouse" + studyVersion;
-	// 	//console.log(this[text].length)
-	// 	if (this[text].length > 0) {
-	// 		let viewPositionList = [];
-	// 		this[text].forEach((item, index) => {
-	// 			//console.log("ITEM: " + item)
-
-	// 			viewPositionList.push(
-	// 				<div>
-	// 					{/* <CSVLink data={item[1]} filename={item[0] + "_mouseData.csv"}>
-	// 						{item[0]}_mouseData
-	// 					</CSVLink> */}
-	// 					{/*<div id="subinfogray">{item}</div>*/}
-	// 				</div>
-	// 			);
-	// 		});
-	// 		return viewPositionList;
-	// 	} else {
-	// 		return null;
-	// 	}
-	// };
-
-	// renderMouseSingle = (studyVersion) => {
-	// 	let text = "singleMouse" + studyVersion;
-	// 	if (this[text].length > 0) {
-	// 		let viewPositionList = [];
-	// 		viewPositionList.push(
-	// 			<div>
-	// 				<CSVLink
-	// 					data={this[text]}
-	// 					filename={"mouseData" + studyVersion + ".csv"}
-	// 				>
-	// 					{"mouseData" + studyVersion + ".csv"}
-	// 				</CSVLink>
-	// 			</div>
-	// 		);
-	// 		return viewPositionList;
-	// 	} else {
-	// 		return null;
-	// 	}
-	// };
-
 	/** Create a CSV from an array of dictionaries */
 	createCSV(data) {
-		console.log(data);
 		// Convert the array of dictionaries to CSV format
 		const csv = Papa.unparse(data);
 
@@ -266,7 +165,7 @@ class Admin extends React.Component {
 		/* Login popup */
 		if (!this.state.isAuthenticated) {
 			return (
-				<ModalReact className="modal_dtp" isOpen={this.state.modalOpened}>
+				<ModalReact className="modal_dtp" isOpen={!this.state.isAuthenticated}>
 					<form
 						onSubmit={(e) => {
 							e.preventDefault();
@@ -279,7 +178,7 @@ class Admin extends React.Component {
 								type="password"
 								id="password"
 								onChange={this.handleChange.bind(this)}
-								value={this.state.password}
+								value={this.state.typedText}
 								autoFocus
 							/>
 							<button type="submit">Submit</button>

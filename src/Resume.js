@@ -39,12 +39,6 @@ export default class Resume extends React.Component {
 		});
 	}
 
-	// componentWillUnmount() {
-	// 	if (this.timer) {
-	// 		clearInterval(this.timer);
-	// 	}
-	// }
-
 	/** The first resume has randomly-decided values. Decide them and put into state. */
 	getResume1Values(callback) {
 		// Select gender
@@ -183,7 +177,6 @@ export default class Resume extends React.Component {
 			.get()
 			.then((doc) => {
 				this.setState({ degree: doc.data().degree });
-				this.setState({ distinction: doc.data().distinction });
 				this.setState({ duration: doc.data().duration });
 				this.setState({ major: doc.data().major });
 				this.setState({ university: doc.data().university });
@@ -287,6 +280,11 @@ export default class Resume extends React.Component {
 		}));
 	}
 
+	/** Runs when the user moves the mouse */
+	_onMouseMove(e) {
+		this.recordActivity("mouse", `(${e.clientX},${e.clientY})`, "moved mouse");
+	}
+
 	render() {
 		// If our data hasn't loaded yet, show a loading screen
 		if (!(this.state.bulletList && this.state.positionList.length > 0)) {
@@ -295,7 +293,7 @@ export default class Resume extends React.Component {
 
 		return (
 			<div className="overall">
-				<div className="App">
+				<div className="App" onMouseMove={this._onMouseMove.bind(this)}>
 					<div className="resume">
 						<div>
 							<img

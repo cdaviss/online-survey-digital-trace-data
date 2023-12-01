@@ -58,9 +58,50 @@ Get the code and install dependencies.
 
 ### Set Up Firebase
 
-The code reads the resume information from Firebase.
+The code reads the resume information from Firebase. Your database should look like this:
 
-TODO: write this section
+```text
+| resume
+| ---- education a
+| ---- ---- degree
+| ---- ---- duration
+| ---- ---- major
+| ---- ---- university
+| ---- education b
+| ---- ---- degree
+| ---- ---- duration
+| ---- ---- major
+| ---- ---- university
+| ---- notes from initial phone screen 
+| ---- ---- nonparent
+| ---- ---- parent
+| ---- work box 1a
+| ---- ---- company
+| ---- ---- description
+| ---- ---- duration
+| ---- ---- location
+| ---- ---- title
+| ---- work box 1b
+| ---- ---- company
+| ---- ---- description
+| ---- ---- duration
+| ---- ---- location
+| ---- ---- title
+| ---- work box 2a
+| ---- ---- company
+| ---- ---- description
+| ---- ---- duration
+| ---- ---- location
+| ---- ---- title
+| ---- work box 2b
+| ---- ---- company
+| ---- ---- description
+| ---- ---- duration
+| ---- ---- location
+| ---- ---- title
+```
+
+Each field should be of type "string." The value will be shown in the resume.
 
 ### Installation
 
