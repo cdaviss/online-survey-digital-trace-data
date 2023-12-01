@@ -98,7 +98,7 @@ TODO: write this section
       "name": "digital-trace-data",
       "homepage": "https://YOUR_GITHUB_USERNAME.github.io/online-survey-digital-trace-data/",
       "version": "0.1.0",
-      ...
+      // more stuff that you can leave as-is...
     ```
 
 2. Deploy the website to [GitHub Pages](https://pages.github.com/).
