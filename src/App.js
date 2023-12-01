@@ -1,7 +1,7 @@
 import React from "react";
-import Resume from "./Resume";
 import { HashRouter, Route } from "react-router-dom";
-// import ReadData from "./ReadData";
+import firebase from "./firebase";
+import Resume from "./Resume";
 import LandingPage from "./LandingPage";
 import Admin from "./Admin";
 import { IS_DEMO_VERSION } from "./config";
@@ -15,6 +15,8 @@ export default class App extends React.Component {
 		super(props);
 		this.activityCounter = 1;
 		this.recordActivity = this.recordActivity.bind(this);
+
+		this.DATABASE = firebase.firestore();
 
 		// This is hacky, but ReactRouter can't parse URL parameters unless inside a Route
 		const loc = document.location.hash;

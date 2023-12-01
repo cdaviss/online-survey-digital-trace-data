@@ -38,6 +38,7 @@ class Admin extends React.Component {
 
 			userIDs: [],
 			resumeCSVurl: null,
+			activitiesCSVurl: null,
 		};
 		// this.study2List = [];
 		// this.study2bList = [];
@@ -74,6 +75,7 @@ class Admin extends React.Component {
 		this.DATABASE = firebase.firestore();
 
 		this.resumeContent = [];
+		this.activityContent = [];
 
 		// Ensures screen readers don't see the content while the modal is open
 		const rootElement = document.getElementById("root");
@@ -86,7 +88,7 @@ class Admin extends React.Component {
 
 	/** Handles typing in the password box */
 	handleChange(event) {
-		this.setState({ errorMessage: false });
+		this.setState({ showPasswordErrorMessage: false });
 		this.setState({ password: event.target.value });
 	}
 
@@ -94,13 +96,14 @@ class Admin extends React.Component {
 	submitPassword() {
 		if (this.state.password === adminPassword || IS_DEMO_VERSION) {
 			this.setState({ modalOpened: false, isAuthenticated: true });
+			this.fetchData();
 		} else {
-			this.setState({ errorMessage: true, isAuthenticated: false });
+			this.setState({ showPasswordErrorMessage: true, isAuthenticated: false });
 		}
 	}
 
 	/** Main function that kick-starts all the downloading */
-	async getStudyLists() {
+	async fetchData() {
 		let userIDs = null;
 
 		// In the demo version, only use the sample response IDs
@@ -108,12 +111,13 @@ class Admin extends React.Component {
 			userIDs = ["0sampleResponseIDstudy1", "0sampleResponseIDstudy2"];
 		} else {
 			const tmp = await this.DATABASE.collection("responseIDs").get();
-			userIDs = tmp.docs;
+			userIDs = tmp.docs.map((doc) => doc.id);
 		}
 
 		if (userIDs.length > 0) {
 			this.setState({ userIDs: userIDs }, () => {
-				const promises = userIDs.map((user) => {
+				// Get resume content for each user
+				const resumePromises = userIDs.map((user) => {
 					return Promise.all([
 						this.getResumeContent(user, 1),
 						this.getResumeContent(user, 2),
@@ -121,134 +125,38 @@ class Admin extends React.Component {
 				});
 
 				// Wait for all promises to resolve
-				Promise.all(promises)
+				Promise.all(resumePromises)
 					.then(() => {
 						// Create a CSV from the resume content
-						this.createCSV(this.resumeContent);
+						this.setState({
+							resumeCSVurl: this.createCSV(this.resumeContent),
+						});
 					})
 					.catch((error) => {
 						console.error("Error fetching resumes:", error);
 					});
+
+				// Get activity content for each user
+				const activityPromises = userIDs.map((user) => {
+					return Promise.all([
+						this.getActivityContent(user, 1),
+						this.getActivityContent(user, 2),
+					]);
+				});
+
+				// Wait for all promises to resolve
+				Promise.all(activityPromises)
+					.then(() => {
+						// Create a CSV from the activity content
+						this.setState({
+							activitiesCSVurl: this.createCSV(this.activityContent),
+						});
+					})
+					.catch((error) => {
+						console.error("Error fetching activity:", error);
+					});
 			});
-
-			// this.setState({ totalResume: this.state.userIDs.length });
-			// this.getResume1(0);
-
-			// this.setState({ totalActivity: this.state.userIDs.length });
-			// this.getActivity1(0);
 		}
-	}
-
-	// /** Get the content of each user's Resume 1 */
-	// getResume1(i) {
-	// 	console.log(this.state.userIDs.length);
-	// 	var max = i + 80;
-	// 	while (i < max && i < this.state.userIDs.length) {
-	// 		this.getResumeContent(this.userIDs[i].id, 1);
-	// 		i++;
-	// 	}
-	// 	this.setState({ completedResume: i });
-	// 	if (i < this.state.userIDs.length) {
-	// 		this.getResume1(i);
-	// 	}
-	// }
-
-	getActivityContent(itemID, studyVersion) {
-		console.log("getting activity for " + itemID);
-		let text = "masterActivity" + studyVersion;
-		let csvList = [];
-		let newObj = [];
-
-		let singleText = "singleActivity" + studyVersion;
-		let newObjSingle = [];
-
-		//get activity data - page 1
-		var snapshot1 = firebase
-			.firestore()
-			.collection("userIDs")
-			.doc(itemID)
-			.collection("activityData_page1")
-			.onSnapshot((snapshot) => {
-				snapshot.forEach((doc) => {
-					newObj = ["page 1", doc.data().time, doc.data().description];
-					csvList = [...csvList, newObj];
-
-					newObjSingle = [
-						itemID,
-						"page 1",
-						doc.data().time,
-						doc.data().description,
-					];
-					this[singleText] = [...this[singleText], newObjSingle];
-				});
-				snapshot1();
-			});
-
-		//get activity data - page 2
-		var snapshot2 = firebase
-			.firestore()
-			.collection("userIDs")
-			.doc(itemID)
-			.collection("activityData_page2")
-			.onSnapshot((snapshot) => {
-				snapshot.forEach((doc) => {
-					newObj = ["page 2", doc.data().time, doc.data().description];
-					csvList = [...csvList, newObj];
-
-					newObjSingle = [
-						itemID,
-						"page 2",
-						doc.data().time,
-						doc.data().description,
-					];
-					this[singleText] = [...this[singleText], newObjSingle];
-				});
-				snapshot2();
-			});
-
-		//get activity data - page 3
-		var snapshot3 = firebase
-			.firestore()
-			.collection("userIDs")
-			.doc(itemID)
-			.collection("activityData_page3")
-			.onSnapshot((snapshot) => {
-				snapshot.forEach((doc) => {
-					newObj = ["page 3", doc.data().time, doc.data().description];
-					csvList = [...csvList, newObj];
-
-					newObjSingle = [
-						itemID,
-						"page 3",
-						doc.data().time,
-						doc.data().description,
-					];
-					this[singleText] = [...this[singleText], newObjSingle];
-				});
-				snapshot3();
-			});
-
-		//get activity data - page 4
-		var snapshot4 = firebase
-			.firestore()
-			.collection("userIDs")
-			.doc(itemID)
-			.collection("activityData_page4")
-			.onSnapshot((snapshot) => {
-				snapshot.forEach((doc) => {
-					newObj = ["page 4", doc.data().time, doc.data().description];
-					csvList = [...csvList, newObj];
-
-					newObjSingle = [
-						itemID,
-						"page 4",
-						doc.data().time,
-						doc.data().description,
-					];
-					this[singleText] = [...this[singleText], newObjSingle];
-				});
-				snapshot4();
-			});
 	}
 
 	/** Get the content of the resume a user saw */
@@ -278,20 +186,24 @@ class Admin extends React.Component {
 			});
 	}
 
-	getActivity1(i) {
-		setTimeout(() => {
-			console.log("in loop func");
-			console.log(this.state.userIDs.length);
-			var max = i + 20;
-			while (i < max && i < this.state.userIDs.length) {
-				this.getActivityContent(this.userIDs[i].id, 1);
-				i++;
-			}
-			this.setState({ completedActivity: i });
-			if (i < this.state.userIDs.length) {
-				this.getActivity1(i);
-			}
-		}, 30000);
+	/** Get the activity of a user on a specific resume */
+	getActivityContent(responseID, resumeNum) {
+		// Get the reference to the resume
+		const resumeRef = this.DATABASE.collection("responseIDs")
+			.doc(responseID)
+			.collection(`activityData_resume${resumeNum}`);
+
+		// Get the content of the resume
+		return resumeRef.get().then((querySnapshot) => {
+			querySnapshot.forEach((doc) => {
+				this.activityContent.push({
+					responseID: responseID,
+					resumeNum: resumeNum,
+					activityID: doc.id,
+					...doc.data(),
+				});
+			});
+		});
 	}
 
 	// renderMouseData = (studyVersion) => {
@@ -307,51 +219,6 @@ class Admin extends React.Component {
 	// 					{/* <CSVLink data={item[1]} filename={item[0] + "_mouseData.csv"}>
 	// 						{item[0]}_mouseData
 	// 					</CSVLink> */}
-	// 					{/*<div id="subinfogray">{item}</div>*/}
-	// 				</div>
-	// 			);
-	// 		});
-	// 		return viewPositionList;
-	// 	} else {
-	// 		return null;
-	// 	}
-	// };
-
-	// renderActivityData = (studyVersion) => {
-	// 	let text = "masterActivity" + studyVersion;
-	// 	//console.log(this[text].length)
-	// 	if (this[text].length > 0) {
-	// 		let viewPositionList = [];
-	// 		this[text].forEach((item, index) => {
-	// 			//console.log("ITEM: " + item)
-
-	// 			viewPositionList.push(
-	// 				<div>
-	// 					{/* <CSVLink data={item[1]} filename={item[0] + "_activityData.csv"}>
-	// 						{item[0]}_activityData
-	// 					</CSVLink> */}
-	// 				</div>
-	// 			);
-	// 		});
-	// 		return viewPositionList;
-	// 	} else {
-	// 		return null;
-	// 	}
-	// };
-
-	// renderResumeData = (studyVersion) => {
-	// 	let text = "masterResume" + studyVersion;
-	// 	//console.log(this[text].length)
-	// 	if (this[text].length > 0) {
-	// 		let viewPositionList = [];
-	// 		this[text].forEach((item, index) => {
-	// 			//console.log("ITEM: " + item)
-
-	// 			viewPositionList.push(
-	// 				<div>
-	// 					<CSVLink data={item[1]} filename={item[0] + "_resumeData.csv"}>
-	// 						{item[0]}_resumeData
-	// 					</CSVLink>
 	// 					{/*<div id="subinfogray">{item}</div>*/}
 	// 				</div>
 	// 			);
@@ -382,46 +249,6 @@ class Admin extends React.Component {
 	// 	}
 	// };
 
-	// renderActivitySingle = (studyVersion) => {
-	// 	let text = "singleActivity" + studyVersion;
-	// 	if (this[text].length > 0) {
-	// 		let viewPositionList = [];
-	// 		viewPositionList.push(
-	// 			<div>
-	// 				<CSVLink
-	// 					data={this[text]}
-	// 					filename={"activityData" + studyVersion + ".csv"}
-	// 				>
-	// 					{"activityData" + studyVersion + ".csv"}
-	// 				</CSVLink>
-	// 			</div>
-	// 		);
-	// 		return viewPositionList;
-	// 	} else {
-	// 		return null;
-	// 	}
-	// };
-
-	// renderResumeSingle = (studyVersion) => {
-	// 	let text = "singleResume" + studyVersion;
-	// 	if (this[text].length > 0) {
-	// 		let viewPositionList = [];
-	// 		viewPositionList.push(
-	// 			<div>
-	// 				<CSVLink
-	// 					data={this[text]}
-	// 					filename={"resumeData" + studyVersion + ".csv"}
-	// 				>
-	// 					{"resumeData" + studyVersion + ".csv"}
-	// 				</CSVLink>
-	// 			</div>
-	// 		);
-	// 		return viewPositionList;
-	// 	} else {
-	// 		return null;
-	// 	}
-	// };
-
 	/** Create a CSV from an array of dictionaries */
 	createCSV(data) {
 		console.log(data);
@@ -432,8 +259,7 @@ class Admin extends React.Component {
 		const blob = new Blob([csv], { type: "text/csv" });
 
 		// Create a download link
-		const url = URL.createObjectURL(blob);
-		this.setState({ resumeCSVurl: url });
+		return URL.createObjectURL(blob);
 	}
 
 	render() {
@@ -471,11 +297,18 @@ class Admin extends React.Component {
 				<div className="container">
 					<div className="title">Download Data</div>
 
-					<button onClick={this.getStudyLists.bind(this)}>Go!</button>
+					{!this.state.activitiesCSVurl && !this.state.resumeCSVurl && (
+						<p>Processing...</p>
+					)}
 
-					{this.state.displayingActivity && (
+					{this.state.activitiesCSVurl && (
 						<div className="horizontal" id="big">
-							<div>Activity Data</div>
+							<a
+								href={this.state.activitiesCSVurl}
+								download={`activity_data.csv`}
+							>
+								Activity Data
+							</a>
 						</div>
 					)}
 
@@ -486,19 +319,6 @@ class Admin extends React.Component {
 							</a>
 						</div>
 					)}
-
-					<hr />
-
-					<div className="list">
-						<div id="title">Study Data: </div>
-
-						<div className="horizontal">
-							<div>
-								User Data Processed {this.state.completedUser}/
-								{this.state.userIDs.length}
-							</div>
-						</div>
-					</div>
 				</div>
 			</div>
 		);
