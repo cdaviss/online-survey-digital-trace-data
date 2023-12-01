@@ -10,29 +10,32 @@ export default class Resume extends React.Component {
 	constructor(props) {
 		super(props);
 		this.state = {
-			// x: 0,
-			// y: 0,
 			positionList: [],
 		};
 
 		// Add props to "this"
-		this.qualtricsUserId = this.props.qualtricsUserId;
 		this.recordActivity = this.props.recordActivity;
+
+		const db = firebase.firestore();
+		this.USER_DATA = db
+			.collection("responseIDs")
+			.doc(this.props.qualtricsUserId);
+		this.RESUME_CONTENT = db.collection("resume");
 
 		this.collapsibleOpened = this.collapsibleToggled.bind(this);
 		this.voteClick = this.voteClick.bind(this);
-		this.mouseCounter = 0;
 	}
 
 	componentDidMount() {
 		this.setState({ studyVersion: this.props.studyVersion });
 		this.setState({ resumeVersion: this.props.resumeVersion }, () => {
-			// On the first resume, decide the data the user will see in the whole study
+			// On the first resume, we'll decide the data the user will see in the whole study
 			if (this.state.resumeVersion === 1) {
-				this.selectValues();
+				this.getResume1Values(this.displayValues);
+			} else {
+				// Show the appropriate resume data
+				this.getResume2Values(this.displayValues);
 			}
-			// Show the appropriate resume data
-			this.populateValues();
 		});
 	}
 
@@ -42,352 +45,164 @@ export default class Resume extends React.Component {
 	// 	}
 	// }
 
-	/** Decide what values they will see in the study */
-	selectValues() {
-		const db = firebase.firestore();
-
-		//get city
-		db.collection("resume")
-			.doc("study2_location")
+	/** The first resume has randomly-decided values. Decide them and put into state. */
+	getResume1Values(callback) {
+		// Get city
+		this.RESUME_CONTENT.doc("study2_location")
 			.get()
 			.then((doc) => {
 				this.setState({ city: doc.data().city });
 			});
 
-		//select remote text for initial notes section (if study 2)
-		let remote_notes = Math.random();
-		if (remote_notes < 0.5) {
-			db.collection("resume")
-				.doc("notes from initial phone screen")
-				.get()
-				.then((doc) => {
-					this.setState({
-						remoteNotesText: doc.data()["not_working_remotely"],
-					});
-					remote_notes = 1;
-				});
-		} else {
-			db.collection("resume")
-				.doc("notes from initial phone screen")
-				.get()
-				.then((doc) => {
-					this.setState({ remoteNotesText: doc.data()["working_remotely"] });
-					remote_notes = 2;
-				});
-		}
+		// Select gender
+		const isMan = Math.random() < 0.5;
 
-		//select gender
-		let gender = Math.random();
-		if (gender < 0.5) {
-			this.setState({ gender_icon: "male_user" });
-			gender = "man";
-		} else {
-			this.setState({ gender_icon: "female_user" });
-			gender = "woman";
-		}
+		// Select parenthood
+		const isParent = Math.random() < 0.5;
 
-		//select parenthood
-		let parenthood = Math.random();
-		if (parenthood < 0.5) {
-			this.setState({ parenthood: true }, () => {
-				db.collection("resume")
-					.doc("notes from initial phone screen")
-					.get()
-					.then((doc) => {
-						let temp = doc.data().parent.toString();
-						if (gender === "man") {
-							temp = temp.replace("[pronoun]", "his");
-						} else {
-							temp = temp.replace("[pronoun]", "her");
-						}
-						var split = temp.split(".");
-						this.setState({ bulletList: split });
-					});
-			});
-			parenthood = true;
-		} else {
-			this.setState({ parenthood: false }, () => {
-				db.collection("resume")
-					.doc("notes from initial phone screen")
-					.get()
-					.then((doc) => {
-						let temp = doc.data().nonparent.toString();
-						if (gender === "man") {
-							temp = temp.replace("[pronoun]", "his");
-						} else {
-							temp = temp.replace("[pronoun]", "her");
-						}
-						var split = temp.split(".");
-						this.setState({ bulletList: split });
-					});
-			});
-			parenthood = false;
-		}
+		// Select education
+		// Could be more than two options in the future
+		const education = Math.random() < 0.5 ? "a" : "b";
 
-		//select education
-		let education = Math.random();
-		if (education < 0.5) {
-			this.setState({ education: 0 }, () => {
-				db.collection("resume")
-					.doc("education a")
-					.get()
-					.then((doc) => {
-						this.setState({ degree: doc.data().degree });
-						this.setState({ distinction: doc.data().distinction });
-						this.setState({ duration: doc.data().duration });
-						this.setState({ major: doc.data().major });
-						this.setState({ university: doc.data().university });
-					});
-			});
-			education = "a";
-		} else {
-			this.setState({ education: 1 }, () => {
-				db.collection("resume")
-					.doc("education b")
-					.get()
-					.then((doc) => {
-						this.setState({ degree: doc.data().degree });
-						this.setState({ distinction: doc.data().distinction });
-						this.setState({ duration: doc.data().duration });
-						this.setState({ major: doc.data().major });
-						this.setState({ university: doc.data().university });
-					});
-			});
-			education = "b";
-		}
+		// Could be more than two options in the future
+		const work1 = Math.random() < 0.5 ? "a" : "b";
+		const work2 = Math.random() < 0.5 ? "a" : "b";
 
-		//select work experience 1
-		let work1 = Math.random();
-		if (work1 < 0.5) {
-			this.setState({ work1: 0 }, () => {
-				db.collection("resume")
-					.doc("work box 1a")
-					.get()
-					.then((doc) => {
-						this.addPositionToList(doc);
-					});
-			});
-			work1 = "a";
-		} else {
-			this.setState({ work1: 1 }, () => {
-				db.collection("resume")
-					.doc("work box 1b")
-					.get()
-					.then((doc) => {
-						this.addPositionToList(doc);
-					});
-			});
-			work1 = "b";
-		}
+		// Decide if remote or not
+		// Only used for study 2! but always calculate it to keep the code simple
+		const isRemote = Math.random() < 0.5;
 
-		//select work experience 2
-		let work2 = Math.random();
-		if (work2 < 0.5) {
-			this.setState({ work2: 0 }, () => {
-				db.collection("resume")
-					.doc("work box 2a")
-					.get()
-					.then((doc) => {
-						this.addPositionToList(doc);
-					});
-			});
-			work2 = "a";
-		} else {
-			this.setState({ work2: 1 }, () => {
-				db.collection("resume")
-					.doc("work box 2b")
-					.get()
-					.then((doc) => {
-						this.addPositionToList(doc);
-					});
-			});
-			work2 = "b";
-		}
-
-		//JUST FOR STUDY 2:
-		//select remote or not remote
-		let remote = Math.random();
-		if (this.state.studyVersion === 2) {
-			if (remote < 0.5) {
-				this.setState({ remote: true });
-				remote = true;
-			} else {
-				this.setState({ remote: false });
-				remote = false;
-			}
-		} else {
-			remote = null;
-		}
-
-		//initialize resume 1 values
-		db.collection("responseIDs")
-			.doc(this.qualtricsUserId)
-			.collection("values shown")
-			.doc("resume 1")
-			.set({
-				gender: gender,
-				parenthood: parenthood,
+		// Store resume 1 values in state
+		this.setState(
+			{
+				isMan: isMan,
+				isParent: isParent,
 				education: education,
 				work1: work1,
 				work2: work2,
-				remote: remote,
-				remoteNotesText: remote_notes,
+				isRemote: isRemote,
+			},
+			// Now that info is in state, call the callback
+			callback
+		);
+
+		// Store resume 1 values in the database
+		this.USER_DATA.collection("values shown").doc("resume 1").set({
+			isMan: isMan,
+			isParent: isParent,
+			education: education,
+			work1: work1,
+			work2: work2,
+			isRemote: isRemote,
+		});
+	}
+
+	/** The second resume has the opposite values to the first. Calculate them and put into state. */
+	getResume2Values(callback) {
+		// Get the values shown to this user for resume 1
+		this.USER_DATA.collection("values shown")
+			.doc("resume 1")
+			.get()
+			.then((doc) => {
+				const resume1values = doc.data();
+				// Same gender
+				const isMan = resume1values.isMan;
+
+				// Opposite parenthood
+				const isParent = !resume1values.isParent;
+
+				// Opposite education
+				// Could be more than two options in the future, which would need more logic
+				const education = resume1values.education === "a" ? "b" : "a";
+
+				// Opposite work history
+				// Could be more than two options in the future, which would need more logic
+				const work1 = resume1values.work1 === "a" ? "b" : "a";
+				const work2 = resume1values.work2 === "a" ? "b" : "a";
+
+				// Opposite remote status
+				// Only used for study 2! but always calculate it to keep the code simple
+				const isRemote = !resume1values.isRemote;
+
+				// Store resume 2 values in state
+				this.setState(
+					{
+						isMan: isMan,
+						isParent: isParent,
+						education: education,
+						work1: work1,
+						work2: work2,
+						isRemote: isRemote,
+					},
+					// Now that info is in state, call the callback
+					callback
+				);
+
+				// Store resume 2 values in the database
+				this.USER_DATA.collection("values shown").doc("resume 2").set({
+					isMan: isMan,
+					isParent: isParent,
+					education: education,
+					work1: work1,
+					work2: work2,
+					isRemote: isRemote,
+				});
 			});
 	}
 
-	/** Read the database to see what condition the user is in, and then display the appropriate data */
-	populateValues() {
-		const db = firebase.firestore();
-
-		//get city
-		db.collection("resume")
-			.doc("study2_location")
+	/** Once we've decided the values, actually display them (based on state) */
+	displayValues() {
+		// City
+		this.RESUME_CONTENT.doc("study2_location")
 			.get()
 			.then((doc) => {
 				this.setState({ city: doc.data().city });
 			});
 
-		// From the database, get the values that were shown to this user for resume 1
-		db.collection("responseIDs")
-			.doc(this.qualtricsUserId)
-			.collection("values shown")
-			.doc("resume 1")
+		// Initial phone screen notes
+		this.RESUME_CONTENT.doc("notes from initial phone screen")
 			.get()
 			.then((doc) => {
-				let gender = null;
-				let resume2education = null;
-				let work1 = null;
-				let work2 = null;
-				let work3 = null;
-				let remote = null;
-
-				const resume1data = doc.data();
-
-				this.setState({ remoteNotesText: resume1data.remote_text_1 });
-
-				if (resume1data.gender === "man") {
-					this.setState({ gender_icon: "male_user" });
-					gender = "man";
+				let parenthoodText = null;
+				// Based on parent/nonparent
+				if (this.state.isParent) {
+					parenthoodText = doc.data().nonparent.toString();
 				} else {
-					this.setState({ gender_icon: "female_user" });
-					gender = "woman";
+					parenthoodText = doc.data().parent.toString();
 				}
 
-				// Initial phone screen notes are based on parent/nonparent
-				db.collection("resume")
-					.doc("notes from initial phone screen")
-					.get()
-					.then((doc) => {
-						let parenthoodText = null;
-						if (resume1data.parenthood === true) {
-							parenthoodText = doc.data().nonparent.toString();
-						} else {
-							parenthoodText = doc.data().parent.toString();
-						}
+				// Put the text into a nicer format
+				let split = parenthoodText
+					// Split each sentence into a bullet point,
+					.split(".")
+					// Clean up whitespace
+					.map((str) => str.trim())
+					// Remove any empty strings (by removing falsy values)
+					.filter(Boolean);
+				this.setState({ bulletList: split });
+			});
 
-						let split = parenthoodText
-							// Split each sentence into a bullet point,
-							.split(".")
-							// Clean up whitespace
-							.map((str) => str.trim())
-							// Remove any empty strings (by removing falsy values)
-							.filter(Boolean);
-						this.setState({ bulletList: split });
-					});
+		// Education
+		this.RESUME_CONTENT.doc(`education ${this.state.education}`)
+			.get()
+			.then((doc) => {
+				this.setState({ degree: doc.data().degree });
+				this.setState({ distinction: doc.data().distinction });
+				this.setState({ duration: doc.data().duration });
+				this.setState({ major: doc.data().major });
+				this.setState({ university: doc.data().university });
+			});
 
-				// TODO: read db.collection.resume once
-
-				//education - show the opposite
-				if (resume1data.education === "a") {
-					db.collection("resume")
-						.doc("education b")
-						.get()
-						.then((doc) => {
-							this.setState({ degree: doc.data().degree });
-							this.setState({ distinction: doc.data().distinction });
-							this.setState({ duration: doc.data().duration });
-							this.setState({ major: doc.data().major });
-							this.setState({ university: doc.data().university });
-						});
-					resume2education = "b";
-				} else {
-					db.collection("resume")
-						.doc("education a")
-						.get()
-						.then((doc) => {
-							this.setState({ degree: doc.data().degree });
-							this.setState({ distinction: doc.data().distinction });
-							this.setState({ duration: doc.data().duration });
-							this.setState({ major: doc.data().major });
-							this.setState({ university: doc.data().university });
-						});
-					resume2education = "a";
-				}
-
-				// TODO: haven't cleaned up below this yet
-				//work1 - show the opposite
-				if (doc.data().work1 === "a") {
-					db.collection("resume")
-						.doc("work box 1b")
-						.get()
-						.then((doc) => {
-							this.addPositionToList(doc);
-						});
-					work1 = "b";
-				} else {
-					db.collection("resume")
-						.doc("work box 1a")
-						.get()
-						.then((doc) => {
-							this.addPositionToList(doc);
-						});
-					work1 = "a";
-				}
-
-				//work2 - show the opposite
-				if (doc.data().work2 === "a") {
-					db.collection("resume")
-						.doc("work box 2b")
-						.get()
-						.then((doc) => {
-							this.addPositionToList(doc);
-						});
-					work2 = "b";
-				} else {
-					db.collection("resume")
-						.doc("work box 2a")
-						.get()
-						.then((doc) => {
-							this.addPositionToList(doc);
-						});
-					work2 = "a";
-				}
-
-				//remote - show the opposite (JUST FOR STUDY 2)
-				if (this.state.studyVersion === 2) {
-					if (doc.data().remote === true) {
-						this.setState({ remote: false });
-						remote = false;
-					} else {
-						this.setState({ remote: true });
-						remote = true;
-					}
-				}
-
-				//initialize resume 2 values
-				db.collection("userIDs")
-					.doc(this.state.currentUserID)
-					.collection("values shown")
-					.doc("resume 2")
-					.set({
-						gender: gender,
-						parenthood: !resume1data.parenthood,
-						education: resume2education,
-						work1: work1,
-						work2: work2,
-						work3: work3,
-						remote: remote,
-					});
+		// Work experience
+		this.RESUME_CONTENT.doc(`work box 1${this.state.work1}`)
+			.get()
+			.then((doc) => {
+				this.addPositionToList(doc.data());
+			});
+		this.RESUME_CONTENT.doc(`work box 2${this.state.work1}`)
+			.get()
+			.then((doc) => {
+				this.addPositionToList(doc.data());
 			});
 	}
 
@@ -510,7 +325,7 @@ export default class Resume extends React.Component {
 						<div>
 							<img
 								className="profile_image"
-								src={imageToURL(this.state.gender_icon)}
+								src={imageToURL(this.state.isMan ? "male_user" : "female_user")}
 								alt="the candidate"
 							/>
 							<div className="header">
@@ -663,7 +478,7 @@ export default class Resume extends React.Component {
 									{/* Position List */}
 									<Accordion.Collapse eventKey="1">
 										<Card.Body>
-											{this.state.positionList.map((item, index) => {
+											{this.state.positionList.map((position, index) => {
 												return (
 													<div key={index}>
 														<div className="votingblock">
@@ -675,9 +490,9 @@ export default class Resume extends React.Component {
 
 															<div id="subtext">
 																{" "}
-																{item.data().title}
+																{position.title}
 																<div id="horizontal">
-																	<div id="subinfo">{item.data().company}</div>
+																	<div id="subinfo">{position.company}</div>
 
 																	{/*remote && study version 2*/}
 																	{this.state.studyVersion === 2 &&
@@ -703,12 +518,8 @@ export default class Resume extends React.Component {
 																			</div>
 																		)}
 																</div>
-																<div id="subinfogray">
-																	{item.data().duration}
-																</div>
-																<div id="subinfo">
-																	{item.data().description}
-																</div>
+																<div id="subinfogray">{position.duration}</div>
+																<div id="subinfo">{position.description}</div>
 															</div>
 														</div>
 														<Divider />
@@ -735,9 +546,7 @@ function imageToURL(imageName) {
 }
 
 // TODO: default params for state, clickFunction
-/**
- * Component: upvote, circle, and downvote, in traffic light colors.
- */
+/** Component: upvote, circle, and downvote, in traffic light colors. */
 const VotingButtons = ({ state, clickFunction, sectionName }) => {
 	return (
 		<div className="vertical">

@@ -35,7 +35,7 @@ export default class App extends React.Component {
 		const now = moment();
 
 		if (this.DATABASE) {
-			this.DATABASE.collection("userIDs")
+			this.DATABASE.collection("responseIDs")
 				.doc(this.qualtricsUserId)
 				.collection("activityData_resume" + this.resumeVersion.toString())
 				.doc(id)
