@@ -5,6 +5,7 @@ import firebase from "./firebase";
 import Accordion from "react-bootstrap/Accordion";
 import Button from "react-bootstrap/Button";
 import Card from "react-bootstrap/Card";
+import VotingBlock from "./VotingBlock";
 
 /*
   This is the main component for the resume page. It displays a resume with various sections that can be toggled open and closed.
@@ -29,7 +30,6 @@ export default class Resume extends React.Component {
 		this.RESUME_CONTENT = db.collection("resume");
 
 		this.collapsibleOpened = this.collapsibleToggled.bind(this);
-		this.voteClick = this.voteClick.bind(this);
 	}
 
 	componentDidMount() {
@@ -192,13 +192,36 @@ export default class Resume extends React.Component {
 
 				// Put the text into a nicer format
 				let split = parenthoodText
-					// Split each sentence into a bullet point,
+					// Split each sentence into a bullet point
 					.split(".")
 					// Clean up whitespace
 					.map((str) => str.trim())
 					// Remove any empty strings (by removing falsy values)
 					.filter(Boolean);
 				this.setState({ bulletList: split });
+			});
+
+		// Misc section
+		this.RESUME_CONTENT.doc("misc")
+			.get()
+			.then((doc) => {
+				let parenthoodText = null;
+				// Based on parent/nonparent
+				if (this.state.isParent) {
+					parenthoodText = doc.data().nonparent.toString();
+				} else {
+					parenthoodText = doc.data().parent.toString();
+				}
+
+				// Put the text into a nicer format
+				let split = parenthoodText
+					// Split each sentence into a bullet point
+					.split(".")
+					// Clean up whitespace
+					.map((str) => str.trim())
+					// Remove any empty strings (by removing falsy values)
+					.filter(Boolean);
+				this.setState({ misc: split });
 			});
 
 		// Education
@@ -245,65 +268,8 @@ export default class Resume extends React.Component {
 		}
 	}
 
-	// TODO: move to separate file
-	/** Called when one of the upvote/circle/downvote buttons are clicked */
-	voteClick(event) {
-		this.setState(
-			{ [event.target.name]: !this.state[event.target.name] },
-			() => {
-				if (this.state[event.target.name]) {
-					// Record the click
-					this.recordActivity(
-						"click",
-						event.target.name,
-						`clicked ${event.target.name} button`
-					);
-					//unclick the others in the same box
-					if (event.target.name === "work1_up") {
-						this.setState({ work1_down: false, work1_q: false });
-					} else if (event.target.name === "work2_up") {
-						this.setState({ work2_down: false, work2_q: false });
-					} else if (event.target.name === "work3_up") {
-						this.setState({ work3_down: false, work3_q: false });
-					} else if (event.target.name === "work1_down") {
-						this.setState({ work1_up: false, work1_q: false });
-					} else if (event.target.name === "work2_down") {
-						this.setState({ work2_up: false, work2_q: false });
-					} else if (event.target.name === "work3_down") {
-						this.setState({ work3_up: false, work3_q: false });
-					} else if (event.target.name === "work1_q") {
-						this.setState({ work1_up: false, work1_down: false });
-					} else if (event.target.name === "work2_q") {
-						this.setState({ work2_up: false, work2_down: false });
-					} else if (event.target.name === "work3_q") {
-						this.setState({ work3_up: false, work3_down: false });
-					} else if (event.target.name === "education_down") {
-						this.setState({ education_up: false, education_q: false });
-					} else if (event.target.name === "education_up") {
-						this.setState({ education_down: false, education_q: false });
-					} else if (event.target.name === "education_q") {
-						this.setState({ education_up: false, education_down: false });
-					} else if (event.target.name === "notes_down") {
-						this.setState({ notes_up: false, notes_q: false });
-					} else if (event.target.name === "notes_up") {
-						this.setState({ notes_down: false, notes_q: false });
-					} else if (event.target.name === "notes_q") {
-						this.setState({ notes_up: false, notes_down: false });
-					}
-				} else {
-					// Record the click
-					this.recordActivity(
-						"click",
-						event.target.name,
-						`un-clicked ${event.target.name} button`
-					);
-				}
-			}
-		);
-	}
-
 	/** Fetches the candidate data (name and gender) from the database and stores it in state */
-	async parseCandidateData(callbackFunc) {
+	parseCandidateData(callbackFunc) {
 		const rawData = this.db.collection("candidates");
 
 		const maleCandidates = [];
@@ -371,7 +337,7 @@ export default class Resume extends React.Component {
 
 	/** Runs when the user moves the mouse */
 	_onMouseMove(e) {
-		this.recordActivity("mouse", `(${e.clientX},${e.clientY})`, "moved mouse");
+		// this.recordActivity("mouse", `(${e.clientX},${e.clientY})`, "moved mouse");
 	}
 
 	render() {
@@ -398,38 +364,34 @@ export default class Resume extends React.Component {
 							/>
 							<div className="header">
 								{this.state.name ||
-									`Candidate {this.state.resumeVersion === 1 ? "A" : "B"}`}
+									`Candidate ${this.state.resumeVersion === 1 ? "A" : "B"}`}
 							</div>
 
 							<div className="votingblock_notes">
-								<VotingButtons
-									state={this.state}
-									clickFunction={this.voteClick}
+								<VotingBlock
 									sectionName="notes"
+									recordActivity={this.recordActivity}
 								/>
 
 								<div className="notes">
 									Notes from Initial Phone Screen:
-									<span id="subtext_bullet">
-										<ul>
-											{this.state.remoteNotesText && (
-												<li>
-													{this.replaceGenderOptions(
-														this.state.remoteNotesText
-													)}
-												</li>
-											)}
-											{this.state.bulletList.map((item, index) => {
-												return (
-													<li key={index}>{this.replaceGenderOptions(item)}</li>
-												);
-											})}
-										</ul>
-									</span>
+									<ul>
+										{this.state.remoteNotesText && (
+											<li>
+												{this.replaceGenderOptions(this.state.remoteNotesText)}
+											</li>
+										)}
+										{this.state.bulletList.map((item, index) => {
+											return (
+												<li key={index}>{this.replaceGenderOptions(item)}</li>
+											);
+										})}
+									</ul>
 								</div>
 							</div>
 
 							<Accordion>
+								{/* Education Section */}
 								<Card>
 									<Card.Header
 										style={{
@@ -461,7 +423,11 @@ export default class Resume extends React.Component {
 													() => {
 														this.collapsibleToggled(0);
 														if (this.state.educationSectionOpened) {
-															this.setState({ workSectionOpened: false });
+															// Mark the other sections as closed
+															this.setState({
+																workSectionOpened: false,
+																miscSectionOpened: false,
+															});
 														}
 													}
 												)
@@ -483,9 +449,9 @@ export default class Resume extends React.Component {
 									<Accordion.Collapse eventKey="0">
 										<Card.Body>
 											<div className="votingblock">
-												<VotingButtons
-													state={this.state}
-													sectionName={"education"}
+												<VotingBlock
+													sectionName="education"
+													recordActivity={this.recordActivity}
 												/>
 												<div id="subtext">
 													{this.state.university}
@@ -499,6 +465,7 @@ export default class Resume extends React.Component {
 									</Accordion.Collapse>
 								</Card>
 
+								{/* Work Section */}
 								<Card>
 									<Card.Header
 										style={{
@@ -530,7 +497,9 @@ export default class Resume extends React.Component {
 														this.collapsibleToggled(1);
 														if (this.state.workSectionOpened) {
 															this.setState({
+																// Mark the other sections as closed
 																educationSectionOpened: false,
+																miscSectionOpened: false,
 															});
 														}
 													}
@@ -557,10 +526,9 @@ export default class Resume extends React.Component {
 												return (
 													<div key={index}>
 														<div className="votingblock">
-															<VotingButtons
-																state={this.state}
-																clickFunction={this.voteClick}
+															<VotingBlock
 																sectionName={`work${index + 1}`}
+																recordActivity={this.recordActivity}
 															/>
 
 															<div id="subtext">
@@ -604,6 +572,84 @@ export default class Resume extends React.Component {
 										</Card.Body>
 									</Accordion.Collapse>
 								</Card>
+
+								{/* Misc Section */}
+								<Card>
+									<Card.Header
+										style={{
+											background: "white",
+											paddingLeft: 0,
+											paddingRight: 0,
+											borderTop: "1px solid black",
+										}}
+									>
+										<Accordion.Toggle
+											as={Button}
+											style={{
+												color: "black",
+												width: "100%",
+												display: "flex",
+												flexDirection: "row",
+												justifyContent: "space-between",
+												fontSize: "18px",
+												alignItems: "center",
+											}}
+											variant="link"
+											eventKey="2"
+											onClick={() =>
+												this.setState(
+													{
+														miscSectionOpened: !this.state.miscSectionOpened,
+													},
+													() => {
+														this.collapsibleToggled(2);
+														if (this.state.miscSectionOpened) {
+															// Mark the other sections as closed
+															this.setState({
+																educationSectionOpened: false,
+																workSectionOpened: false,
+															});
+														}
+													}
+												)
+											}
+										>
+											Miscellaneous {/* TODO: make toggle bars a component */}
+											<img
+												id="toggle_icon"
+												src={
+													this.state.miscSectionOpened
+														? imageToURL("minus_icon")
+														: imageToURL("plus_icon")
+												}
+												alt="toggle icon"
+											/>
+										</Accordion.Toggle>
+									</Card.Header>
+
+									<Accordion.Collapse eventKey="2">
+										<Card.Body>
+											<div className="votingblock">
+												<VotingBlock
+													sectionName="misc"
+													recordActivity={this.recordActivity}
+												/>
+												<div className="notes">
+													Other:
+													<ul>
+														{this.state.misc.map((item, index) => {
+															return (
+																<li key={index}>
+																	{this.replaceGenderOptions(item)}
+																</li>
+															);
+														})}
+													</ul>
+												</div>
+											</div>
+										</Card.Body>
+									</Accordion.Collapse>
+								</Card>
 							</Accordion>
 						</div>
 					</div>
@@ -616,47 +662,6 @@ export default class Resume extends React.Component {
 /**
  * Turns an image name into the src, relative to /public/images. Image should be a png.
  */
-function imageToURL(imageName) {
+export function imageToURL(imageName) {
 	return `${process.env.PUBLIC_URL}/images/${imageName}.png`;
 }
-
-// TODO: default params for state, clickFunction
-/** Component: upvote, circle, and downvote, in traffic light colors. */
-const VotingButtons = ({ state, clickFunction, sectionName }) => {
-	return (
-		<div className="vertical">
-			<img
-				name={`${sectionName}_up`}
-				src={
-					state[`${sectionName}_up`]
-						? imageToURL("upvote_selected")
-						: imageToURL("upvote")
-				}
-				onClick={clickFunction}
-				alt="upvote"
-			/>
-
-			<img
-				name={`${sectionName}_q`}
-				src={
-					state[`${sectionName}_q`]
-						? imageToURL("circle_selected")
-						: imageToURL("circle")
-				}
-				onClick={clickFunction}
-				alt="question mark"
-			/>
-
-			<img
-				name={`${sectionName}_down`}
-				src={
-					state[`${sectionName}_down`]
-						? imageToURL("downvote_selected")
-						: imageToURL("downvote")
-				}
-				onClick={clickFunction}
-				alt="downvote"
-			/>
-		</div>
-	);
-};
