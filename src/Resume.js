@@ -54,19 +54,10 @@ export default class Resume extends React.Component {
 		const isMan = Math.random() < 0.5;
 
 		// Select name randomly from list of male/female candidates
-		if (isMan) {
-			const name =
-				this.state.maleCandidates[
-					Math.floor(Math.random() * this.state.maleCandidates.length)
-				].name;
-			this.setState({ name: name });
-		} else {
-			const name =
-				this.state.femaleCandidates[
-					Math.floor(Math.random() * this.state.maleCandidates.length)
-				].name;
-			this.setState({ name: name });
-		}
+		const nameIndex = Math.random() < 0.5 ? 0 : 1;
+		let name = isMan
+			? this.state.maleCandidates[nameIndex].name
+			: this.state.femaleCandidates[nameIndex].name;
 
 		// Select parenthood
 		const isParent = Math.random() < 0.5;
@@ -92,6 +83,8 @@ export default class Resume extends React.Component {
 				work1: work1,
 				work2: work2,
 				isRemote: isRemote,
+				name: name,
+				nameIndex: nameIndex,
 			},
 			// Now that info is in state, call the callback
 			callback
@@ -108,6 +101,8 @@ export default class Resume extends React.Component {
 			work1: work1,
 			work2: work2,
 			isRemote: isRemote,
+			name: name,
+			nameIndex: nameIndex,
 		});
 	}
 
@@ -121,6 +116,12 @@ export default class Resume extends React.Component {
 				const resume1values = doc.data();
 				// Same gender
 				const isMan = resume1values.isMan;
+
+				// The other name
+				const nameIndex = resume1values.nameIndex === 0 ? 1 : 0;
+				const name = isMan
+					? this.state.maleCandidates[nameIndex].name
+					: this.state.femaleCandidates[nameIndex].name;
 
 				// Opposite parenthood
 				const isParent = !resume1values.isParent;
@@ -147,6 +148,8 @@ export default class Resume extends React.Component {
 						work1: work1,
 						work2: work2,
 						isRemote: isRemote,
+						name: name,
+						nameIndex: nameIndex,
 					},
 					// Now that info is in state, call the callback
 					callback
@@ -160,6 +163,8 @@ export default class Resume extends React.Component {
 					work1: work1,
 					work2: work2,
 					isRemote: isRemote,
+					name: name,
+					nameIndex: nameIndex,
 				});
 			});
 	}
@@ -297,6 +302,7 @@ export default class Resume extends React.Component {
 		);
 	}
 
+	/** Fetches the candidate data (name and gender) from the database and stores it in state */
 	async parseCandidateData(callbackFunc) {
 		const rawData = this.db.collection("candidates");
 
@@ -335,6 +341,25 @@ export default class Resume extends React.Component {
 			.catch((error) => {
 				console.error("Error getting candidates:", error);
 			});
+	}
+
+	/** Helper function: search through the text and replace option placeholders based on gender */
+	replaceGenderOptions(text) {
+		// We expect all options to be in the format [maleOption/femaleOption]
+		const matches = text.match(/\[(.*?)\/(.*?)\]/g);
+
+		if (!matches) {
+			return text;
+		}
+
+		matches.forEach((match) => {
+			// Slice off the brackets and split the options
+			const options = match.slice(1, -1).split("/");
+			// Replace the placeholder with the appropriate option
+			text = text.replace(match, this.state.isMan ? options[0] : options[1]);
+		});
+
+		return text;
 	}
 
 	/** Helper function: append a new position to the positionList */
@@ -388,10 +413,16 @@ export default class Resume extends React.Component {
 									<span id="subtext_bullet">
 										<ul>
 											{this.state.remoteNotesText && (
-												<li>{this.state.remoteNotesText}</li>
+												<li>
+													{this.replaceGenderOptions(
+														this.state.remoteNotesText
+													)}
+												</li>
 											)}
 											{this.state.bulletList.map((item, index) => {
-												return <li key={index}>{item}</li>;
+												return (
+													<li key={index}>{this.replaceGenderOptions(item)}</li>
+												);
 											})}
 										</ul>
 									</span>

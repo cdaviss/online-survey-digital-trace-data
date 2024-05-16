@@ -107,7 +107,7 @@ Get the code and install dependencies.
     | candidates
     ```
 
-    Each field should be of type "string." The value will be shown in the resume.
+    Each field should be of type "string." The value will be shown in the resume. Within the values for `notes from initial phone screen`, you can insert gendered words by including the options in square brackets. For example, `[his/her] [wife/husband]`would become `"his wife"` or `"her husband"`. The first option will be inserted for male candidates, and the second for female.
 
     Within the `candidates` collection, you can create as many candidates as you want. Each candidate must have two fields: `isMan` (of type boolean) and `name` (of type string).
 
