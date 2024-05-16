@@ -265,6 +265,13 @@ export default class Resume extends React.Component {
 				"work",
 				"toggled work section "
 			);
+		} else if (eventKey === 2) {
+			// Misc Section
+			this.recordActivity(
+				"collapsibleToggled",
+				"misc",
+				"toggled misc section "
+			);
 		}
 	}
 
