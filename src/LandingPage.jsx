@@ -1,5 +1,10 @@
 import React, { useState } from "react";
 
+/*
+  This is the landing page for the demo. 
+  It's a simple page that explains the study and shows you what the website looks like when embedded into a Qualtrics survey.
+*/
+
 export default function LandingPage() {
 	const [iframes, setIframes] = useState([]);
 
