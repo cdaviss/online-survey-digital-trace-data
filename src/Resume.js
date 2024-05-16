@@ -6,6 +6,11 @@ import Accordion from "react-bootstrap/Accordion";
 import Button from "react-bootstrap/Button";
 import Card from "react-bootstrap/Card";
 
+/*
+  This is the main component for the resume page. It displays a resume with various sections that can be toggled open and closed.
+  All of the randomization and pre-processing of the Firebase values is done here.
+*/
+
 export default class Resume extends React.Component {
 	constructor(props) {
 		super(props);
@@ -17,6 +22,7 @@ export default class Resume extends React.Component {
 		this.recordActivity = this.props.recordActivity;
 
 		const db = firebase.firestore();
+		this.db = db;
 		this.USER_DATA = db
 			.collection("responseIDs")
 			.doc(this.props.qualtricsUserId);
@@ -29,13 +35,16 @@ export default class Resume extends React.Component {
 	componentDidMount() {
 		this.setState({ studyVersion: this.props.studyVersion });
 		this.setState({ resumeVersion: this.props.resumeVersion }, () => {
-			// On the first resume, we'll decide the data the user will see in the whole study
-			if (this.state.resumeVersion === 1) {
-				this.getResume1Values(this.displayValues);
-			} else {
-				// Show the appropriate resume data
-				this.getResume2Values(this.displayValues);
-			}
+			this.parseCandidateData(() => {
+				console.log(this.state);
+				// On the first resume, we'll decide the data the user will see in the whole study
+				if (this.state.resumeVersion === 1) {
+					this.getResume1Values(this.displayValues);
+				} else {
+					// Show the appropriate resume data
+					this.getResume2Values(this.displayValues);
+				}
+			});
 		});
 	}
 
@@ -43,6 +52,21 @@ export default class Resume extends React.Component {
 	getResume1Values(callback) {
 		// Select gender
 		const isMan = Math.random() < 0.5;
+
+		// Select name randomly from list of male/female candidates
+		if (isMan) {
+			const name =
+				this.state.maleCandidates[
+					Math.floor(Math.random() * this.state.maleCandidates.length)
+				].name;
+			this.setState({ name: name });
+		} else {
+			const name =
+				this.state.femaleCandidates[
+					Math.floor(Math.random() * this.state.maleCandidates.length)
+				].name;
+			this.setState({ name: name });
+		}
 
 		// Select parenthood
 		const isParent = Math.random() < 0.5;
@@ -273,6 +297,46 @@ export default class Resume extends React.Component {
 		);
 	}
 
+	async parseCandidateData(callbackFunc) {
+		const rawData = this.db.collection("candidates");
+
+		const maleCandidates = [];
+		const femaleCandidates = [];
+
+		rawData
+			.where("isMan", "==", true)
+			.get()
+			.then((querySnapshot) => {
+				querySnapshot.forEach((doc) => {
+					maleCandidates.push(doc.data());
+				});
+			})
+			.then(() => {
+				// After fetching male candidates, fetch female candidates
+				return rawData
+					.where("isMan", "==", false)
+					.get()
+					.then((querySnapshot) => {
+						querySnapshot.forEach((doc) => {
+							femaleCandidates.push(doc.data());
+						});
+					});
+			})
+			.then(() => {
+				// Set to state and call callback
+				this.setState(
+					{
+						maleCandidates: maleCandidates,
+						femaleCandidates: femaleCandidates,
+					},
+					callbackFunc
+				);
+			})
+			.catch((error) => {
+				console.error("Error getting candidates:", error);
+			});
+	}
+
 	/** Helper function: append a new position to the positionList */
 	addPositionToList(newPosition) {
 		this.setState((prevState) => ({
@@ -287,7 +351,13 @@ export default class Resume extends React.Component {
 
 	render() {
 		// If our data hasn't loaded yet, show a loading screen
-		if (!(this.state.bulletList && this.state.positionList.length > 0)) {
+		if (
+			!(
+				this.state.bulletList &&
+				this.state.positionList.length > 0 &&
+				this.state.name
+			)
+		) {
 			return <h1>Loading...</h1>;
 		}
 
@@ -302,7 +372,8 @@ export default class Resume extends React.Component {
 								alt="the candidate"
 							/>
 							<div className="header">
-								Candidate {this.state.resumeVersion === 1 ? "A" : "B"}
+								{this.state.name ||
+									`Candidate {this.state.resumeVersion === 1 ? "A" : "B"}`}
 							</div>
 
 							<div className="votingblock_notes">
