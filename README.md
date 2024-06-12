@@ -9,7 +9,7 @@
 <div id="top"></div>
 
 <p align="left">
-Code repository for <em>Untapped Potential: Collecting and Analyzing Digital Trace Data within Survey Experiments</em>, by Erin Macke, Claire Daviss, and Emma Williams-Baron.
+Code repository for <em>Untapped Potential: Designed Digital Trace Data in Online Survey Experiments</em>, by Erin Macke, Claire Daviss, and Emma Williams-Baron.
 
 SocArXiv Preprint: [10.31235/osf.io/frhj6](10.31235/osf.io/frhj6)<br>
 Demo: [https://thefirstquestion.github.io/online-survey-digital-trace-data/#/](https://thefirstquestion.github.io/online-survey-digital-trace-data/#/)
@@ -26,44 +26,56 @@ Demo: [https://thefirstquestion.github.io/online-survey-digital-trace-data/#/](h
 - [Acknowledgements](#acknowledgements)
 
 ## About <a name="about"></a>
+Welcome to the code repository for "Untapped Potential: Designed Digital Trace Data in Online Survey Experiments!" We wrote this code to show you how we implemented the studies described in our paper, which collected digital trace data through interactive digital resumes embedded in Qualtrics surveys. Here we provide instructions for how you can recreate these digital resumes. You can also adapt this code for your own research! If you use this repository, we ask that you please cite us: ADD CITATION HERE.
 
-Researchers can collect digital trace data during online survey experiments with relative ease, at modest costs, and to substantial benefit. Because digital trace data unobtrusively measure survey participants’ behaviors, they can be used to analyze digital outcomes of theoretical and empirical interest, while reducing the risk of social desirability bias. We demonstrate the utility of collecting digital trace data during online survey experiments through two original studies. In both, participants evaluated interactive digital resumes, which we designed to track participants’ clicks, mouse movements, and time spent on the resumes. This novel approach allowed us to better understand participants’ search for information and cognitive processing in hiring decisions. Overall, there is immense untapped potential value in collecting digital trace data during online survey experiments and using it to address important sociological research questions. We provide this repository so that future research can build their own tools and run similar studies.
+**Abstract**
+Researchers have developed many uses for digital trace data, yet most online survey experiments continue to rely on attitudinal rather than behavioral measures. We argue that researchers can collect digital trace data during online survey experiments with relative ease, at modest costs, and to substantial benefit. Because digital trace data unobtrusively measure survey participants’ behaviors, they can be used to analyze digital outcomes of theoretical and empirical interest, while reducing the risk of social desirability bias. We demonstrate the feasibility and utility of collecting digital trace data during online survey experiments through two original studies. In both, participants evaluated interactive digital resumes designed to track participants’ clicks, mouse movements, and time spent on the resumes. This novel approach allowed us to better understand participants’ search for information and cognitive processing in hiring decisions. There is immense, untapped potential value in collecting digital trace data during online survey experiments and using it to address important sociological research questions.
 
 <p align="right">(<a href="#top">back to top</a>)</p>
 
 ## Usage <a name="usage"></a>
 
-This code is designed to be hosted on GitHub Pages, with individual pages embedded within Qualtrics surveys.
+The interactive digital resumes created using this code are designed to be hosted on GitHub Pages. Once you create the different resume pages, you can embed them individaully into Qualtrics surveys. 
 
-A live demo can be found [here](https://thefirstquestion.github.io/online-survey-digital-trace-data/#/).
+To see an example of how these interactive digital resumes may look embedded into a web page, click [here](https://thefirstquestion.github.io/online-survey-digital-trace-data/#/).
 
 <p align="right">(<a href="#top">back to top</a>)</p>
 
 ## Getting Started <a name="getting_started"></a>
 
-These instructions will get you a copy of the project up and running.
+Here we explain how to create interactive digital resumes and embed them into a Qualtrics survey.
 
 ### Prerequisites
 
-Get the code and install dependencies.
+Before you get started, you'll need to copy the code to your own computer and install dependencies.
 
 1. [Set up Git and GitHub](https://docs.github.com/en/get-started/quickstart/set-up-git).
 
-2. [Fork this repository](https://docs.github.com/en/get-started/quickstart/fork-a-repo) to create your own copy of the code.
+2. [Fork this repository](https://docs.github.com/en/get-started/quickstart/fork-a-repo) to create your own copy of this repository.
 
 3. [Clone your fork](https://docs.github.com/en/get-started/quickstart/fork-a-repo#cloning-your-forked-repository) of the code to get the files on your local computer.
 
 4. [Install npm](https://docs.npmjs.com/downloading-and-installing-node-js-and-npm) (Node Package Manager), which you will use to run the code.
 
-5. [Create a Firebase project and register your app](https://firebase.google.com/docs/web/setup#create-firebase-project-and-app). Firebase is the database for this project. You will provide the resume data here, and the digital trace data will also be recorded here.
 
 <p align="right">(<a href="#top">back to top</a>)</p>
 
 ### Set Up Firebase
+Firebase will serve as the database for your project. You use Firebase to enter the information that will go into the resumes (e.g., work, education, and miscellaneous information). The interactive digital resumes "read" this resume information directly from Firebase. Then, once the interactive digital resumes are created, digital trace data will also be "write" to Firebase.
 
-1. Enter your study values
+1. [Create a Firebase project and register your app](https://firebase.google.com/docs/web/setup#create-firebase-project-and-app).
 
-    The code reads the resume information from Firebase. Your database should look like this:
+    Most of the steps in the Firebase instructions are self-explanatory, so follow along! When presented with the choice to enable Google Analytics, please do so. Finally, on the last registration page, you'll see a bunch of information, including your API key, authorization domain, project ID, etc. You may want to copy this information into a separate document, as you'll need it later.
+
+2. Build the database of resume information.
+
+    Navigate to your Firebase Console. From the "Build" drop-down menu on the left, select "Firestore Database." Click "Create Database." In the options you will select the location and the "secure rules." You can click "start in production mode." Then, to build the database, click "Start collection."
+
+   In "Document parent path," you enter the main interactive digital item, which in this case is "resume." Under "document ID", you enter each of the headers (e.g., "education a", "ecucaiton b", "work 1a", and so on). Then, in the "fields", you enter the subheaders (e.g., "degree", "duration", "major", and "university". Each field should be of type "string.
+
+   Once you have all of the fields set up, enter the values in those fields. The values you enter are the texts that will be shown in the interactive digital resumes you create.
+
+    Your database should have this format:
 
     ```text
     | resume
