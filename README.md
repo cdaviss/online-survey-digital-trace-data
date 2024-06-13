@@ -1,8 +1,10 @@
 <!--
+# File initially created by:
 # Steven G. Opferman | steven.g.opferman@gmail.com
 # Adapted from:
 #   https://github.com/othneildrew/Best-README-Template/
 #   https://github.com/kylelobo/The-Documentation-Compendium/
+# File updated with detailed information by Claire Daviss
 -->
 
 <h1 align="center">Online Survey Digital Trace Data</h1>
