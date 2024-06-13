@@ -26,6 +26,7 @@ Researchers have developed many uses for digital trace data, yet most online sur
 - [Usage](#usage)
 - [Creating Interactive Digital Resumes for Qualtrics Surveys](#creating_interactive_digital_resumes)
 - [Troubleshooting](#troubleshooting)
+- [Customizing](#customizing)
 - [Contributing](#contributing)
 - [Acknowledgements](#acknowledgements)
 
@@ -240,6 +241,16 @@ If you are encountering problems with the website, we recommend you follow these
 4. [Open an issue](https://docs.github.com/en/issues/tracking-your-work-with-issues/creating-an-issue) and provide as much information as you can. Explain what you’re trying to do and include the entire output of your terminal and [browser console](https://appuals.com/open-browser-console/), including any error messages.
 
 Please _do not_ email the authors with troubleshooting questions. Our former RA, Steven Opferman, has kindly offered to field questions... but he has every right to ignore you if you ask for too much! He's got a life, okay??
+
+<p align="right">(<a href="#top">back to top</a>)</p>
+
+## Customizing <a name="customizing"></a>
+
+There are many ways you can adapte the interactive digital resumes created here for use in your own studies! Here are a few ideas:
+1. The simplest adaptation is to change the information shown in the already created fields for work, education, and miscellaneous items. All you need to do here is change that information in Firebase, so minimal coding skills required.
+2. Another thing you might want to do is ...
+
+   TO DO: ADD MORE INFORMATION HERE, WITH SOME BASIC EXPLANATION FOR HOW YOU'D DO IT.
 
 <p align="right">(<a href="#top">back to top</a>)</p>
 
