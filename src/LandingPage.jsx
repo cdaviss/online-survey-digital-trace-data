@@ -32,61 +32,28 @@ export default function LandingPage() {
 			<p>And information and such</p>
 
 			<p>And then you can embed the Digital Trace Data page.</p>
-			<p>
-				<strong>
-					TODO: these are based on the studyVersion in the code, which does not
-					align to the DTD paper.
-				</strong>
-			</p>
-
-			<h2>Study 1</h2>
 
 			<p>
-				In Study 1, we are manipulating candidate gender and parenthood status.
+				By default, we are manipulating candidate gender and parenthood status.
 			</p>
 
-			<p>There are two resumes. Here's Candidate A.</p>
+			<p>There are two resumes. Here's Candidate 1.</p>
 
 			<h3>First Resume</h3>
 
 			<button onClick={() => renderEmbeddedResume(1, 1)}>
-				Generate Candidate A resume
+				Generate Candidate 1 resume
 			</button>
 			{iframes.length >= 1 && iframes[0]}
 
 			<h3>Second Resume</h3>
 
-			<p>And now Candidate B.</p>
+			<p>And now Candidate 2.</p>
 
 			<button onClick={() => renderEmbeddedResume(1, 2)}>
-				Generate Candidate A resume
+				Generate Candidate 2 resume
 			</button>
 			{iframes.length >= 2 && iframes[1]}
-
-			<h2>Study 2</h2>
-
-			<p>
-				In Study 2, we are additionally manipulating if the candidate has remote
-				work experience.
-			</p>
-
-			<p>There are two resumes. Here's Candidate A.</p>
-
-			<h3>First Resume</h3>
-
-			<button onClick={() => renderEmbeddedResume(2, 1)}>
-				Generate Candidate A resume
-			</button>
-			{iframes.length >= 3 && iframes[2]}
-
-			<h3>Second Resume</h3>
-
-			<p>And now Candidate B.</p>
-
-			<button onClick={() => renderEmbeddedResume(2, 2)}>
-				Generate Candidate A resume
-			</button>
-			{iframes.length >= 4 && iframes[3]}
 
 			<h2>Downloading the Data</h2>
 			<p>
