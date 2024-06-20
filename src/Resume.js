@@ -36,7 +36,6 @@ export default class Resume extends React.Component {
 		this.setState({ studyVersion: this.props.studyVersion });
 		this.setState({ resumeVersion: this.props.resumeVersion }, () => {
 			this.parseCandidateData(() => {
-				console.log(this.state);
 				// On the first resume, we'll decide the data the user will see in the whole study
 				if (this.state.resumeVersion === 1) {
 					this.getResume1Values(this.displayValues);
@@ -70,10 +69,6 @@ export default class Resume extends React.Component {
 		const work1 = Math.random() < 0.5 ? "a" : "b";
 		const work2 = Math.random() < 0.5 ? "a" : "b";
 
-		// Decide if remote or not
-		// Only used for study 2! but always calculate it to keep the code simple
-		const isRemote = Math.random() < 0.5;
-
 		// Store resume 1 values in state
 		this.setState(
 			{
@@ -82,7 +77,6 @@ export default class Resume extends React.Component {
 				education: education,
 				work1: work1,
 				work2: work2,
-				isRemote: isRemote,
 				name: name,
 				nameIndex: nameIndex,
 			},
@@ -100,7 +94,6 @@ export default class Resume extends React.Component {
 			education: education,
 			work1: work1,
 			work2: work2,
-			isRemote: isRemote,
 			name: name,
 			nameIndex: nameIndex,
 		});
@@ -135,10 +128,6 @@ export default class Resume extends React.Component {
 				const work1 = resume1values.work1 === "a" ? "b" : "a";
 				const work2 = resume1values.work2 === "a" ? "b" : "a";
 
-				// Opposite remote status
-				// Only used for study 2! but always calculate it to keep the code simple
-				const isRemote = !resume1values.isRemote;
-
 				// Store resume 2 values in state
 				this.setState(
 					{
@@ -147,7 +136,6 @@ export default class Resume extends React.Component {
 						education: education,
 						work1: work1,
 						work2: work2,
-						isRemote: isRemote,
 						name: name,
 						nameIndex: nameIndex,
 					},
@@ -162,7 +150,6 @@ export default class Resume extends React.Component {
 					education: education,
 					work1: work1,
 					work2: work2,
-					isRemote: isRemote,
 					name: name,
 					nameIndex: nameIndex,
 				});
@@ -171,13 +158,6 @@ export default class Resume extends React.Component {
 
 	/** Once we've decided the values, actually display them (based on state) */
 	displayValues() {
-		// City
-		this.RESUME_CONTENT.doc("study2_location")
-			.get()
-			.then((doc) => {
-				this.setState({ city: doc.data().city });
-			});
-
 		// Initial phone screen notes
 		this.RESUME_CONTENT.doc("notes from initial phone screen")
 			.get()
@@ -247,10 +227,8 @@ export default class Resume extends React.Component {
 			});
 	}
 
-	// TODO: move to separate file
 	/** Called when a section is toggled open/closed */
 	collapsibleToggled(eventKey) {
-		// TODO: add open/closed based on state
 		if (eventKey === 0) {
 			// Education Section
 			this.recordActivity(
@@ -371,7 +349,7 @@ export default class Resume extends React.Component {
 							/>
 							<div className="header">
 								{this.state.name ||
-									`Candidate ${this.state.resumeVersion === 1 ? "A" : "B"}`}
+									`Candidate ${this.state.resumeVersion === 1 ? "1" : "2"}`}
 							</div>
 
 							<div className="votingblock_notes">
@@ -421,7 +399,6 @@ export default class Resume extends React.Component {
 											variant="link"
 											eventKey="0"
 											onClick={() =>
-												// TODO: clean this up
 												this.setState(
 													{
 														educationSectionOpened:
@@ -513,7 +490,7 @@ export default class Resume extends React.Component {
 												)
 											}
 										>
-											Work Experience {/* TODO: make toggle bars a component */}
+											Work Experience
 											<img
 												id="toggle_icon"
 												src={
@@ -543,30 +520,6 @@ export default class Resume extends React.Component {
 																{position.title}
 																<div id="horizontal">
 																	<div id="subinfo">{position.company}</div>
-
-																	{/*remote && study version 2*/}
-																	{this.state.studyVersion === 2 &&
-																		this.state.isRemote &&
-																		index === 0 && (
-																			<div id="subinfo">
-																				<i>Remote</i>
-																			</div>
-																		)}
-
-																	{this.state.studyVersion === 2 &&
-																		!this.state.isRemote &&
-																		index === 0 && (
-																			<div id="subinfo">
-																				<i>{this.state.city}</i>
-																			</div>
-																		)}
-
-																	{this.state.studyVersion === 2 &&
-																		index !== 0 && (
-																			<div id="subinfo">
-																				<i>{this.state.city}</i>
-																			</div>
-																		)}
 																</div>
 																<div id="subinfogray">{position.duration}</div>
 																<div id="subinfo">{position.description}</div>
@@ -621,7 +574,7 @@ export default class Resume extends React.Component {
 												)
 											}
 										>
-											Miscellaneous {/* TODO: make toggle bars a component */}
+											Miscellaneous
 											<img
 												id="toggle_icon"
 												src={

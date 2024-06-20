@@ -1,12 +1,3 @@
-<!--
-# File initially created by:
-# Steven G. Opferman | steven.g.opferman@gmail.com
-# Adapted from:
-#   https://github.com/othneildrew/Best-README-Template/
-#   https://github.com/kylelobo/The-Documentation-Compendium/
-# File updated with detailed information by Claire Daviss
--->
-
 <h1 align="center">Online Survey Digital Trace Data</h1>
 <div id="top"></div>
 
@@ -14,12 +5,13 @@
 
 Welcome to the code repository for "Untapped Potential: Designed Digital Trace Data in Online Survey Experiments!" We created this repository to show you how we implemented the studies described in our paper, which collected digital trace data through interactive digital resumes embedded in Qualtrics surveys. Here we provide instructions for how you can recreate these digital resumes. You can also adapt this code for your own research! If you use this repository, we ask that you please cite us. Suggested citation:
 
-Erin Macke, Claire Daviss, and Emma Williams-Baron, "Untapped Potential: Designed Digital Trace Data in Online Survey Experiments," <em>Sociological Methods and Research</em>, forthcoming.
+> Erin Macke, Claire Daviss, and Emma Williams-Baron, "Untapped Potential: Designed Digital Trace Data in Online Survey Experiments," <em>Sociological Methods and Research</em>, forthcoming.
 
 SocArXiv Preprint: [10.31235/osf.io/frhj6](10.31235/osf.io/frhj6)<br>
 Demo: [https://thefirstquestion.github.io/online-survey-digital-trace-data/#/](https://thefirstquestion.github.io/online-survey-digital-trace-data/#/)
 
-**Abstract**
+### Abstract
+
 Researchers have developed many uses for digital trace data, yet most online survey experiments continue to rely on attitudinal rather than behavioral measures. We argue that researchers can collect digital trace data during online survey experiments with relative ease, at modest costs, and to substantial benefit. Because digital trace data unobtrusively measure survey participants’ behaviors, they can be used to analyze digital outcomes of theoretical and empirical interest, while reducing the risk of social desirability bias. We demonstrate the feasibility and utility of collecting digital trace data during online survey experiments through two original studies. In both, participants evaluated interactive digital resumes designed to track participants’ clicks, mouse movements, and time spent on the resumes. This novel approach allowed us to better understand participants’ search for information and cognitive processing in hiring decisions. There is immense, untapped potential value in collecting digital trace data during online survey experiments and using it to address important sociological research questions.
 </p>
 
@@ -36,7 +28,7 @@ Researchers have developed many uses for digital trace data, yet most online sur
 
 The interactive digital resumes created using this code are designed to be hosted on GitHub Pages. To see an example of how these interactive digital resumes may look embedded into a web page, click [here](https://thefirstquestion.github.io/online-survey-digital-trace-data/#/).
 
-Once you create the different resume pages, you can embed them individaully into Qualtrics surveys. Digital trace data collected from the resumes are stored in Firebase. Then, you can download your data from an "admin" page, one of the web pages this repository creates.
+Once you create the different resume pages, you can embed them individually into Qualtrics surveys. Digital trace data collected from the resumes are stored in Firebase. Then, you can download your data from an "admin" page, one of the web pages this repository creates.
 
 <p align="right">(<a href="#top">back to top</a>)</p>
 
@@ -54,12 +46,12 @@ Before you get started, you'll need to copy the code to your own computer and in
 
 3. [Clone your fork](https://docs.github.com/en/get-started/quickstart/fork-a-repo#cloning-your-forked-repository) of the code to get the files on your local computer.
 
-4. [Install npm](https://docs.npmjs.com/downloading-and-installing-node-js-and-npm) (Node Package Manager), which you will use to run the code. This code was designed to be run with NPM version #### and Node.js version ###.
-
+4. [Install npm](https://docs.npmjs.com/downloading-and-installing-node-js-and-npm) (Node Package Manager), which you will use to run the code. This code was developed with npm v9.2.0 and Node.js v16.18.1.
 
 <p align="right">(<a href="#top">back to top</a>)</p>
 
 ### Set Up Firebase
+
 Firebase will serve as the database for your project. You use Firebase to enter the information that will go into the resumes (e.g., work, education, and miscellaneous information). The interactive digital resumes "read" this resume information directly from Firebase. Then, once the interactive digital resumes are created, digital trace data will also be "write" to Firebase.
 
 1. [Create a Firebase project and register your app](https://firebase.google.com/docs/web/setup#create-firebase-project-and-app).
@@ -71,8 +63,8 @@ Firebase will serve as the database for your project. You use Firebase to enter 
     Navigate to your Firebase Console. From the "Build" drop-down menu on the left, select "Firestore Database." Click "Create Database." In the options you will select the location and the "secure rules." You can click "start in production mode." Then, to build the database, click "Start collection."
 
    In "Document parent path," you enter two types of documents. The first type of document you create is `candidates.` Within the `candidates` collection, you can create as many candidates as you want. Each candidate must have two fields: `isMan` (of type boolean) and `name` (of type string). The `isMan` field is used to determine pronouns shown in the resume.
-   
-   The second type of document is `resume.` this will contain all resume information. Under "document ID", you enter each of the headers (e.g., `education a`, `education b`, `work 1a`, and so on). Then, in the "fields", you enter the subheaders (e.g., `degree`, `duration`, `major`, and `university`. Each field should be of type "string." Within the values for `notes from initial phone screen` and `misc`, you can insert gendered words by including the options in square brackets. For example, `[his/her] spouse` would become `"his spouse"` or `"her spouse"`. The first option will be inserted for men candidates, and the second for women.
+
+   The second type of document is `resume.` this will contain all resume information. Under "document ID", you enter each of the headers (e.g., `education a`, `education b`, `work 1a`, and so on). Then, in the "fields", you enter the subheaders (e.g., `degree`, `duration`, `major`, and `university`). Each field should be of type "string." Within the values for `notes from initial phone screen` and `misc`, you can insert gendered words by including the options in square brackets. For example, `[his/her] spouse` would become `"his spouse"` or `"her spouse"`. The first option will be inserted for men candidates, and the second for women.
 
     Your database should have this format:
 
@@ -121,8 +113,7 @@ Firebase will serve as the database for your project. You use Firebase to enter 
     | candidates
     ```
 
-
-2. Set up rules.
+3. Set up rules.
 
     Firebase rules define who is allowed to "read" the data you enter into Firebase (i.e., to request that Firebase fill that data into the digital resumes) and "write" to your database (i.e., save any digital trace data that get created with the digital resumes). We want the website to be able to read and write all data, so we'll set those rules. From your Firebase console, on the "Firestore Database" page with the header "Cloud Firestore," click the "Rules" tab at the top of the page. Copy and paste the following rules to that page:
 
@@ -166,12 +157,12 @@ In this next step, you'll use the repository that is now stored on your local co
 
     When you are testing and playing around with the site, you probably want to leave `IS_DEMO_VERSION` set to `True`. This turns off the data recording (to save you money) and speeds up the Admin page. When you are ready to launch your study, set `IS_DEMO_VERSION` to `False`.
 
-   When you are done making these changes, rename this file to `config.js` and save it in the `src` folder. 
+   When you are done making these changes, rename this file to `config.js` and save it in the `src` folder.
 
 4. Start serving the code.
-    
+
     This step will run all of the files in the repository necessary to create a local version of the "demo" shown above. The demo will present versions of the interactive digital resumes in a new tab in your web browser. The URL will start with `localhost:`. This is because it is _not_ online yet -- it's still on your computer! This gives you the opportunity to make changes before you push the final version of the interactive digital resumes to their online format. To serve the code, enter in terminal:
-   
+
     ```sh
     npm start
     ```
@@ -183,6 +174,7 @@ In this next step, you'll use the repository that is now stored on your local co
 <p align="right">(<a href="#top">back to top</a>)</p>
 
 ### Deploying
+
 This step is where we create the web URLs that host the interactive digital resumes. These pages are public, so you can embed them in Qualtrics surveys (the next step). Here we create the resume pages using GitHub Pages, which offers free web hosting for your projects, as of this writing.
 
 1. In your repository, open the `package.json` page (hint: you can use a plain text editor), and ensure that the correct homepage URL is at the top:
@@ -205,14 +197,13 @@ This step is where we create the web URLs that host the interactive digital resu
 
 Et voila! Your pages have been created. You can explore the pages by going directly to the resume URLs. Just fill in the relevant study version, resume version, and a "response ID" (can be any letter/number combination) into this URL: <https://YOUR_GITHUB_USERNAME.github.io/YOUR_REPOSITORY_NAME/#/NUMBER/NUMBER/QUALTRICS_RESPONSE_ID>.
 
-
 ### Use in Qualtrics
 
 The next step is to embed the interactive digital resumes into a Qualtrics survey.
 
 1. Create a new survey.
 
-    Navigate to Qualtrics (qualtrics.com), and once logged in, click "Create a project." Create a survey "from scratch."
+    Navigate to Qualtrics ([qualtrics.com](https://qualtrics.com)), and once logged in, click "Create a project." Create a survey "from scratch."
 
 2. Create embedded fields.
 
@@ -225,7 +216,8 @@ The next step is to embed the interactive digital resumes into a Qualtrics surve
 4. Embed the interactive digital resume into the "Text/Graphic" question.
 
     Click into the text box under the Text/Graphic question. Click "Rich Content Editor...". Look for the box with "<>" inside it at the top of this field; this changes the formatting style to HTML code. Then, enter the following into the box:
-> `<iframe width="600px" height="1000px" src="https://YOUR_GITHUB_USERNAME.github.io/YOUR_REPOSITORY_NAME/#/${e://Field/studyVersion}/${e://Field/resumeVersion}/${e://Field/ResponseID}"></iframe>`
+
+    > `<iframe width="600px" height="1000px" src="https://YOUR_GITHUB_USERNAME.github.io/YOUR_REPOSITORY_NAME/#/${e://Field/studyVersion}/${e://Field/resumeVersion}/${e://Field/ResponseID}"></iframe>`
 
     This will embed the digital resume into your Qualtrics survey.
 
@@ -248,11 +240,10 @@ Please _do not_ email the authors with troubleshooting questions. Our former RA,
 
 ## Customizing <a name="customizing"></a>
 
-There are many ways you can adapte the interactive digital resumes created here for use in your own studies! Here are a few ideas:
-1. The simplest adaptation is to change the information shown in the already created fields for work, education, and miscellaneous items. All you need to do here is change that information in Firebase, so minimal coding skills required.
-2. Another thing you might want to do is ...
+There are many ways you can adapt the interactive digital resumes created here for use in your own studies! Here are a few ideas:
 
-   TO DO: ADD MORE INFORMATION HERE, WITH SOME BASIC EXPLANATION FOR HOW YOU'D DO IT.
+1. The simplest adaptation is to change the information shown in the already created fields for work, education, and miscellaneous items. All you need to do here is change that information in Firebase, so minimal coding skills required.
+2. Another thing you might want to do is run multiple variations of the study. For example, you might want to add a remote/collocated random assignment in addition to the parent/nonparent condition. You can use the `studyVersion` parameter in the URL to route to different variants of the study, which should have their logic implemented within `Resume.js` in the `getResume1Values` function.
 
 <p align="right">(<a href="#top">back to top</a>)</p>
 
@@ -264,7 +255,7 @@ Feel free to do any of the following:
 
 - [open an issue](https://docs.github.com/en/issues/tracking-your-work-with-issues/creating-an-issue) with the tag "enhancement"
 - [fork the repo](https://docs.github.com/en/get-started/quickstart/fork-a-repo) and [create a pull request](https://docs.github.com/en/pull-requests/collaborating-with-pull-requests/proposing-changes-to-your-work-with-pull-requests/creating-a-pull-request)
-- send Steven, who helped to create this repostiory, an [email](mailto:steven.g.opferman@gmail.com)
+- send Steven, who helped to create this repository, an [email](mailto:steven.g.opferman@gmail.com)
 
 <p align="right">(<a href="#top">back to top</a>)</p>
 

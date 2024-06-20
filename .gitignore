@@ -14,6 +14,7 @@ credentials.json
 
 ########################### VS Code ###########################
 *.code-workspace
+.vscode/
 
 ########################### Node ###########################
 # Optional npm cache directory
