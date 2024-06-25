@@ -38,7 +38,7 @@ Here we explain how to create interactive digital resumes, embed them into a Qua
 
 ### Prerequisites
 
-Before you get started, you'll need to copy the code to your own computer and install dependencies.
+Before you get started, you'll need to copy the code to your own computer and install dependencies. Please note: This has only been tested in MacOS. 
 
 1. [Set up Git and GitHub](https://docs.github.com/en/get-started/quickstart/set-up-git).
 
@@ -60,11 +60,13 @@ Firebase will serve as the database for your project. You use Firebase to enter 
 
 2. Build the database of resume information.
 
-    Navigate to your Firebase Console. From the "Build" drop-down menu on the left, select "Firestore Database." Click "Create Database." In the options you will select the location and the "secure rules." You can click "start in production mode." Then, to build the database, click "Start collection."
+    Navigate to your Firebase Console. From the "Build" drop-down menu on the left, select "Firestore Database." Click "Create Database." In the options you will select the location and the "secure rules." You can click "start in production mode." 
 
-   In "Document parent path," you enter two types of documents. The first type of document you create is `candidates.` Within the `candidates` collection, you can create as many candidates as you want. Each candidate must have two fields: `isMan` (of type boolean) and `name` (of type string). The `isMan` field is used to determine pronouns shown in the resume.
+   A general overview: when creating the database, you'll be creating "collections." Within each collection, you can add "documents" and within documents, you can add fields of various types. You will be creating two collections (one for `candidates` and one for `resume`). E.g., in the format shown below, `education a` is a document, and `degree` would be a field.
+   
+   Start by selecting "+ Start Collection" and name the collection ID `candidates` and choose "next." You will then be prompted to add a document ID, you could call this candidate a, for example. Within the `candidates` collection, you can create as many candidates as you want. Each candidate must have two fields: `isMan` (of type boolean) and `name` (of type string). The `isMan` field is used to determine pronouns shown in the resume. Set the values equal to the desired gender and name for each candidate. 
 
-   The second type of document is `resume.` this will contain all resume information. Under "document ID", you enter each of the headers (e.g., `education a`, `education b`, `work 1a`, and so on). Then, in the "fields", you enter the subheaders (e.g., `degree`, `duration`, `major`, and `university`). Each field should be of type "string." Within the values for `notes from initial phone screen` and `misc`, you can insert gendered words by including the options in square brackets. For example, `[his/her] spouse` would become `"his spouse"` or `"her spouse"`. The first option will be inserted for men candidates, and the second for women.
+   The second type of collection is `resume.` this will contain all resume information. Under document ID, you enter each of the headers (e.g., `education a`, `education b`, `work box 1a`, and so on). Then, in the "fields", you enter the subheaders (e.g., `degree`, `duration`, `major`, and `university`). Each field should be of type "string." Within the values for `notes from initial phone screen` and `misc`, you can insert gendered words by including the options in square brackets. For example, `[his/her] spouse` would become `"his spouse"` or `"her spouse"`. The first option will be inserted for men candidates, and the second for women.
 
     Your database should have this format:
 
@@ -177,7 +179,7 @@ In this next step, you'll use the repository that is now stored on your local co
 
 This step is where we create the web URLs that host the interactive digital resumes. These pages are public, so you can embed them in Qualtrics surveys (the next step). Here we create the resume pages using GitHub Pages, which offers free web hosting for your projects, as of this writing.
 
-1. In your repository, open the `package.json` page (hint: you can use a plain text editor), and ensure that the correct homepage URL is at the top:
+1. In your repository, open the `package.json` file (hint: you can use a plain text editor), and ensure that the correct homepage URL is at the top:
 
     ```json
     {
@@ -261,6 +263,6 @@ Feel free to do any of the following:
 
 ## Acknowledgements <a name="acknowledgements"></a>
 
-This project was originally developed by [Neha Sharma](https://github.com/sharman99) in 2021. The codebase was updated by [Steven Opferman](https://thefirstquestion.github.io/), who also wrote the documentation in collaboration with Erin Macke, Claire Daviss, and Emma Williams-Baron in 2023. We -- Erin, Claire, and Emma -- are sincerely grateful to Neha and Steven for their incredible research assistance throughout this project!
+This code was originally developed by [Neha Sharma](https://github.com/sharman99) in 2021. The codebase was updated by [Steven Opferman](https://thefirstquestion.github.io/), who also wrote the documentation in collaboration with Erin Macke, Claire Daviss, and Emma Williams-Baron in 2023. We -- Erin, Claire, and Emma -- are sincerely grateful to Neha and Steven for their incredible research assistance throughout this project!
 
 <p align="right">(<a href="#top">back to top</a>)</p>
