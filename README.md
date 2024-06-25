@@ -267,3 +267,6 @@ Feel free to do any of the following:
 This code was originally developed by [Neha Sharma](https://github.com/sharman99) in 2021. The codebase was updated by [Steven Opferman](https://thefirstquestion.github.io/), who also wrote the documentation in collaboration with Erin Macke, Claire Daviss, and Emma Williams-Baron in 2023. We -- Erin, Claire, and Emma -- are sincerely grateful to Neha and Steven for their incredible research assistance throughout this project!
 
 <p align="right">(<a href="#top">back to top</a>)</p>
+
+## Data and Code Packages for Replicating Results in the "Untapped Potential" Paper
+In addition to sharing the JavaScript/CSS/HTML code for implementing digital trace data in this repository, we also share the Stata/R code and data for replicating the results in the "Untapped Potential" paper. You can find that repository here: https://github.com/EmmaWB/Untapped-Potential-Replication-Package
