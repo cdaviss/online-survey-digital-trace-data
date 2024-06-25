@@ -7,6 +7,7 @@ Welcome to the code repository for "Untapped Potential: Designed Digital Trace D
 
 > Erin Macke, Claire Daviss, and Emma Williams-Baron, "Untapped Potential: Designed Digital Trace Data in Online Survey Experiments," <em>Sociological Methods and Research</em>, forthcoming.
 
+All authors contributed equally.
 SocArXiv Preprint: [10.31235/osf.io/frhj6](10.31235/osf.io/frhj6)<br>
 Demo: [https://cdaviss.github.io/online-survey-digital-trace-data/#/](https://cdaviss.github.io/online-survey-digital-trace-data/#/)
 
