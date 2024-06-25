@@ -8,7 +8,7 @@ Welcome to the code repository for "Untapped Potential: Designed Digital Trace D
 > Erin Macke, Claire Daviss, and Emma Williams-Baron, "Untapped Potential: Designed Digital Trace Data in Online Survey Experiments," <em>Sociological Methods and Research</em>, forthcoming.
 
 SocArXiv Preprint: [10.31235/osf.io/frhj6](10.31235/osf.io/frhj6)<br>
-Demo: [https://thefirstquestion.github.io/online-survey-digital-trace-data/#/](https://thefirstquestion.github.io/online-survey-digital-trace-data/#/)
+Demo: [https://cdaviss.github.io/online-survey-digital-trace-data/#/](https://cdaviss.github.io/online-survey-digital-trace-data/#/)
 
 ### Abstract
 
@@ -26,7 +26,7 @@ Researchers have developed many uses for digital trace data, yet most online sur
 
 ## Usage <a name="usage"></a>
 
-The interactive digital resumes created using this code are designed to be hosted on GitHub Pages. To see an example of how these interactive digital resumes may look embedded into a web page, click [here](https://thefirstquestion.github.io/online-survey-digital-trace-data/#/).
+The interactive digital resumes created using this code are designed to be hosted on GitHub Pages. To see an example of how these interactive digital resumes may look embedded into a web page, click [here](https://cdaviss.github.io/online-survey-digital-trace-data/#/).
 
 Once you create the different resume pages, you can embed them individually into Qualtrics surveys. Digital trace data collected from the resumes are stored in Firebase. Then, you can download your data from an "admin" page, one of the web pages this repository creates.
 
@@ -233,7 +233,7 @@ If you are encountering problems with the website, we recommend you follow these
 
 1. Try the entire process again, double checking that you are following the instructions exactly as written, and filling in any placeholders with your own values.
 2. Read the error message. If you can't understand it, copy-paste the message into Google, and look for others who have run into the same error in other projects.
-3. Look at [previous issues](https://github.com/TheFirstQuestion/online-survey-digital-trace-data/issues?q=is%3Aissue+) in this repository to see if anyone else has run into (and resolved) the issue.
+3. Look at [previous issues](https://github.com/cdaviss/online-survey-digital-trace-data/issues?q=is%3Aissue+) in this repository to see if anyone else has run into (and resolved) the issue.
 4. [Open an issue](https://docs.github.com/en/issues/tracking-your-work-with-issues/creating-an-issue) and provide as much information as you can. Explain what you’re trying to do and include the entire output of your terminal and [browser console](https://appuals.com/open-browser-console/), including any error messages.
 
 Please _do not_ email the authors with troubleshooting questions. Our former RA, Steven Opferman, has kindly offered to field questions... but he has every right to ignore you if you ask for too much! He's got a life, okay??
