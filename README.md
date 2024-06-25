@@ -24,6 +24,7 @@ Researchers have developed many uses for digital trace data, yet most online sur
 - [Customizing](#customizing)
 - [Contributing](#contributing)
 - [Acknowledgements](#acknowledgements)
+- [Replicating Results](#replicating_results)
 
 ## Usage <a name="usage"></a>
 
@@ -268,5 +269,5 @@ This code was originally developed by [Neha Sharma](https://github.com/sharman99
 
 <p align="right">(<a href="#top">back to top</a>)</p>
 
-## Data and Code Packages for Replicating Results in the "Untapped Potential" Paper
+## Data and Code Packages for Replicating Results in the "Untapped Potential" Paper <a name="replicating_results"></a>
 In addition to sharing the JavaScript/CSS/HTML code for implementing digital trace data in this repository, we also share the Stata/R code and data for replicating the results in the "Untapped Potential" paper. You can find that repository here: https://github.com/EmmaWB/Untapped-Potential-Replication-Package
