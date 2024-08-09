@@ -5,10 +5,10 @@
 
 Welcome to the code repository for "Untapped Potential: Designed Digital Trace Data in Online Survey Experiments!" We created this repository to show you how we implemented the studies described in our paper, which collected digital trace data through interactive digital resumes embedded in Qualtrics surveys. Here we provide instructions for how you can recreate these digital resumes. You can also adapt this code for your own research! If you use this repository, we ask that you please cite us. Suggested citation:
 
-> Erin Macke, Claire Daviss, and Emma Williams-Baron, "Untapped Potential: Designed Digital Trace Data in Online Survey Experiments," <em>Sociological Methods and Research</em>, forthcoming.
+> Macke, Erin, Claire Daviss, and Emma Williams-Baron. 2024. “Untapped Potential: Designed Digital Trace Data in Online Survey Experiments.” Sociological Methods & Research. doi: 10.1177/00491241241268770.
 
-All authors contributed equally.
-SocArXiv Preprint: [10.31235/osf.io/frhj6](10.31235/osf.io/frhj6)<br>
+All authors contributed equally to this work. Name order was chosen at random.
+
 Demo: [https://cdaviss.github.io/online-survey-digital-trace-data/#/](https://cdaviss.github.io/online-survey-digital-trace-data/#/)
 
 ### Abstract
