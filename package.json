@@ -15,12 +15,17 @@
 		"react-csv": "^2.2.2",
 		"react-dom": "^17.0.1",
 		"react-modal": "^3.16.1",
-		"react-router-dom": "^5.2.0",
+		"react-router-dom": "^5.2.0"
+	},
+	"devDependencies": {
 		"react-scripts": "4.0.0"
 	},
+	"overrides": {
+		"minimatch": "^3.0.5"
+	},
 	"scripts": {
-		"start": "react-scripts --openssl-legacy-provider start",
-		"build": "react-scripts --openssl-legacy-provider build",
+		"start": "react-scripts start",
+		"build": "react-scripts build",
 		"predeploy": "npm run build",
 		"deploy": "gh-pages -d build",
 		"test": "react-scripts test",
