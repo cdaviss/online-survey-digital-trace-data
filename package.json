@@ -34,7 +34,14 @@
 		"node-forge": ">=1.4.0",
 		"serialize-javascript": ">=7.0.5",
 		"browserslist": ">=4.28.7",
-		"http-proxy-middleware": ">=2.0.10"
+		"http-proxy-middleware": ">=2.0.10",
+		"braces": ">=3.0.3",
+		"webpack-dev-middleware": ">=5.3.4",
+		"postcss": ">=8.5.23",
+		"decode-uri-component": ">=0.5.0",
+		"webpack-dev-server": ">=5.2.6",
+		"uuid": ">=11.1.1",
+		"@babel/core": ">=7.29.6"
 	},
 	"scripts": {
 		"start": "NODE_OPTIONS=--openssl-legacy-provider react-scripts start",
