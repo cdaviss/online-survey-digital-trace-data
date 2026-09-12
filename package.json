@@ -24,7 +24,10 @@
 		"minimatch": "^3.0.5",	
   		"ejs": ">=3.1.10",
 		"shell-quote": ">=1.9.0",
-		"loader-utils": ">=2.0.3"
+		"loader-utils": ">=2.0.3",
+		"immer": ">=9.0.6",
+		"protobufjs": ">=7.6.3",
+		 "websocket-driver": ">=0.7.5"
 	},
 	"scripts": {
 		"start": "NODE_OPTIONS=--openssl-legacy-provider react-scripts start",
