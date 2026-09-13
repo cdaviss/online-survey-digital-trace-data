@@ -41,7 +41,7 @@
 		"decode-uri-component": ">=0.5.0",
 		"@babel/core": ">=7.29.6 <8.0.0",
 		"@tootallnate/once": ">=2.0.1",
-		"undici": "^5.29.0"
+		"undici": "^6.28.0"
 	},
 	"scripts": {
 		"start": "NODE_OPTIONS=--openssl-legacy-provider react-scripts start",
