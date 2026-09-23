@@ -3,52 +3,68 @@ import "./App.css";
 import firebase from "./firebase";
 import Papa from "papaparse";
 import ModalReact from "react-modal";
-import { IS_DEMO_VERSION, adminPassword } from "./config";
+import { IS_DEMO_VERSION } from "./config";
 import "bootstrap/dist/css/bootstrap.min.css";
-
+import { getAuth, signInWithEmailAndPassword, signOut } from "firebase/auth";
 class Admin extends React.Component {
 	constructor(props) {
 		super(props);
 		this.state = {
 			showPasswordErrorMessage: false,
 			isAuthenticated: false,
-			typedText: "",
-
+			email: "",
+			password: "",
 			userIDs: [],
 			resumeCSVurl: null,
 			activitiesCSVurl: null,
+			loggedInAs: ""
 		};
 
 		this.DATABASE = firebase.firestore();
 
 		this.resumeContent = [];
 		this.activityContent = [];
-
+		this.auth = getAuth();
 		// Ensures screen readers don't see the content while the modal is open
 		const rootElement = document.getElementById("root");
 		ModalReact.setAppElement(rootElement);
 	}
 
-	/** Handles typing in the password box */
-	handleChange(event) {
-		this.setState({ showPasswordErrorMessage: false });
-		this.setState({ typedText: event.target.value });
+	/** Handles typing in email box */
+	handleChangeEmail(event) {
+		this.setState({ email: event.target.value })
 	}
 
-	/** When the submit button is clicked */
-	submitPassword() {
-		if (this.state.typedText === adminPassword || IS_DEMO_VERSION) {
-			this.setState({ isAuthenticated: true });
+	/** Handles typing in password box*/
+	handleChangePassword(event) {
+		this.setState({ password: event.target.value });
+	}
+
+	/** Logout handler */
+	handleLogout = async () => {
+		await signOut(this.auth);
+		this.setState({ email: "",
+			password: "", showErrorMessage: false, isAuthenticated: false });
+	}
+
+	/** Authentication handler */
+	handleAdminLogin = async () => {
+		try {
+			const userCredential = await signInWithEmailAndPassword(this.auth, this.state.email, this.state.password);
+			this.setState({loggedInAs :  userCredential.user.email});
+			this.setState({ showErrorMessage: false, isAuthenticated: true });
 			this.fetchData();
-		} else {
-			this.setState({ showPasswordErrorMessage: true, isAuthenticated: false });
+		} catch (error) {
+			this.setState({ showErrorMessage: true, isAuthenticated: false });
+			console.error("Login failed:", error.message);
 		}
 	}
 
 	/** Main function that kick-starts all the downloading */
 	async fetchData() {
 		let userIDs = null;
-
+		this.resumeContent = []
+		this.activityContent=[]
 		// In the demo version, only use the sample response IDs
 		if (IS_DEMO_VERSION) {
 			userIDs = ["0sampleResponseIDstudy1", "0sampleResponseIDstudy2"];
@@ -169,22 +185,31 @@ class Admin extends React.Component {
 					<form
 						onSubmit={(e) => {
 							e.preventDefault();
-							this.submitPassword();
+							this.handleAdminLogin();
 						}}
 					>
 						<div>
-							<label htmlFor="password">Enter Password:</label>
+							<label htmlFor="email">Enter email: </label>
+							<input
+								type="email"
+								id="email"
+								onChange={this.handleChangeEmail.bind(this)}
+								value={this.state.email}
+								autoFocus
+							/>
+						</div>
+						<div>
+							<label htmlFor="password">Enter password: </label>
 							<input
 								type="password"
 								id="password"
-								onChange={this.handleChange.bind(this)}
-								value={this.state.typedText}
-								autoFocus
+								onChange={this.handleChangePassword.bind(this)}
+								value={this.state.password}
 							/>
-							<button type="submit">Submit</button>
 						</div>
-						{this.state.showPasswordErrorMessage && (
-							<div id="red">Invalid password. Please re-enter.</div>
+						<button type="submit">Submit</button>
+						{this.state.showErrorMessage && (
+							<div id="red">Invalid password or email. Please re-enter.</div>
 						)}
 					</form>
 				</ModalReact>
@@ -194,6 +219,7 @@ class Admin extends React.Component {
 		return (
 			<div className="overall">
 				<div className="container">
+					<div className="title">Logged in as {this.state.loggedInAs} </div>
 					<div className="title">Download Data</div>
 
 					{!this.state.activitiesCSVurl && !this.state.resumeCSVurl && (
@@ -218,6 +244,7 @@ class Admin extends React.Component {
 							</a>
 						</div>
 					)}
+				<button type="reset" onClick = {this.handleLogout}>Log out</button>
 				</div>
 			</div>
 		);
