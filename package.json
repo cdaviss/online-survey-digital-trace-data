@@ -32,7 +32,6 @@
 		"@svgr/plugin-svgo": {
 			"svgo": ">=2.8.4 <3.0.0"
 		},
-		"node-forge": ">=1.4.0",
 		"serialize-javascript": ">=7.0.5",
 		"browserslist": ">=4.28.7",
 		"http-proxy-middleware": ">=2.0.10",
@@ -42,7 +41,8 @@
 		"@tootallnate/once": ">=2.0.1",
 		"undici": "^6.28.0",
     	"shell-quote": "^1.11.0",
-		"source-map-js": "^1.2.2"
+		"source-map-js": "^1.2.2",
+		"node-forge": "^1.4.3"
 	},
 	"scripts": {
 		"start": "NODE_OPTIONS=--openssl-legacy-provider react-scripts start",
