@@ -42,7 +42,8 @@
     	"shell-quote": "^1.11.0",
 		"source-map-js": "^1.2.2",
 		"node-forge": "^1.4.3",
-		"undici": "^6.29.1"
+		"undici": "^6.29.1",
+		"fast-uri": "^3.1.9"
 	},
 	"scripts": {
 		"start": "NODE_OPTIONS=--openssl-legacy-provider react-scripts start",
