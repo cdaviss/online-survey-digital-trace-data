@@ -44,7 +44,8 @@
 		"undici": "^6.29.1",
 		"fast-uri": "^3.1.9",
 		"@grpc/grpc-js": "1.13.6",
-		"decode-uri-component": "0.5.1"
+		"decode-uri-component": "0.5.1",
+		"qs": "^6.16.1"
 	},
 	"scripts": {
 		"start": "NODE_OPTIONS=--openssl-legacy-provider react-scripts start",
